@@ -57,8 +57,9 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-he
 button { font: inherit; color: inherit; cursor: pointer; }
 button:focus-visible, .card3:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 code, kbd, pre { font-family: var(--mono); }
-/* Operators must read exactly as typed in C#: no programming ligatures (!= as ≠, && joined, ...) */
-code, kbd, pre, .sample, .state, .steps, .tt, .opts, .card3 { font-variant-ligatures: none; font-feature-settings: "calt" 0, "liga" 0; }
+/* Operators must read exactly as typed in C#: no programming ligatures (!= as ≠, && joined, ...).
+   !important on every element, because each `font:` shorthand below resets both properties. */
+* { font-variant-ligatures: none !important; font-feature-settings: "calt" 0, "liga" 0 !important; }
 kbd {
   font-size: 11px; padding: 1px 6px; border-radius: 4px; border: 1px solid currentColor;
   opacity: .6; margin-left: 6px; font-weight: 400;
@@ -82,10 +83,10 @@ kbd {
 .hero p { color: var(--muted); max-width: 60ch; margin: 14px 0 0; font-size: 17px; }
 .legend { display: flex; gap: 18px; margin-top: 16px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
 .stations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
-@media (max-width: 620px) { .stations { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .stations { grid-template-columns: minmax(0, 1fr); } }
 .station {
   text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
-  padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 8px; transition: transform .15s, border-color .15s;
+  padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 8px; transition: transform .15s, border-color .15s; min-width: 0;
 }
 .station:hover { border-color: var(--accent); transform: translateY(-2px); }
 .station .eyebrow { margin: 0; }
@@ -95,7 +96,7 @@ kbd {
   font: 13px/1.5 var(--mono); background: var(--code-bg); border-radius: 8px; padding: 8px 10px;
   color: var(--ink); overflow-x: auto; white-space: nowrap;
 }
-.station .meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.station .meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: 13px; color: var(--muted); margin-top: 2px; }
 .station .meta b { color: var(--ink); font-variant-numeric: tabular-nums; }
 .eyebrow { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
 
@@ -489,6 +490,23 @@ const TAGS = {
   PAGE: ['Aufrunden', 'Seitenzahl = (total + pageSize − 1) / pageSize. total / pageSize + 1 stimmt nur, wenn die Division einen Rest hat.'],
   REMOVE: ['Index-Verschiebung', 'Entfernst du Element i, rutschen alle folgenden eine Position nach vorn. Das nächste Element landet auf i und wird übersprungen. Rückwärts iterieren oder RemoveAll verwenden.']
 };
+/* Rounds draw from a shuffled deck per pool, like a stack of cards: each round takes the next k,
+   and only an exhausted deck is reshuffled. So nothing repeats until the whole pool has been seen.
+   Decks hold pool indices and survive a reload; indices that no longer fit the pool are dropped. */
+const DECK_KEY = 'wenn-und-aber-decks';
+let DECKS = {};
+try { DECKS = JSON.parse(localStorage.getItem(DECK_KEY)) || {}; } catch (e) { DECKS = {}; }
+function draw(key, pool, k) {
+  let deck = (DECKS[key] || []).filter((i, j, a) => Number.isInteger(i) && i >= 0 && i < pool.length && a.indexOf(i) === j);
+  if (deck.length < k) {
+    const rest = deck;
+    deck = rest.concat(shuffle(pool.map((_, i) => i).filter(i => !rest.includes(i))));
+  }
+  DECKS[key] = deck.slice(k);
+  try { localStorage.setItem(DECK_KEY, JSON.stringify(DECKS)); } catch (e) { /* storage unavailable */ }
+  return deck.slice(0, k).map(i => pool[i]);
+}
+
 function tipHtml(tags) {
   const uniq = [...new Set(tags)];
   return '<div class="tip">' + uniq.map(t => '<div><b>' + esc(TAGS[t][0]) + ':</b> ' + esc(TAGS[t][1]) + '</div>').join('') + '</div>';
@@ -532,11 +550,12 @@ const DOOR = {
   tag: 'Station 1',
   blurb: 'An der Tür hängt jede Nacht eine neue Regel. Lies sie und entscheide, wer reindarf.',
   sample: 'volljährig UND (Ticket ODER Gästeliste)',
+  roundInfo: () => 'Pro Runde 10 Gäste an 5 von ' + DOOR_RULES.length + ' Regeln',
   build() {
     const names = shuffle(NAMES);
     const items = [];
     [1, 2, 3, 4, 5].forEach(t => {
-      const r = pick(DOOR_RULES.filter(x => x.tier === t));
+      const r = draw('door' + t, DOOR_RULES.filter(x => x.tier === t), 1)[0];
       for (let j = 0; j < 2; j++) {
         const env = sampleEnv(r.ast, Math.random() < 0.5);
         const used = varsOf(r.ast);
@@ -761,9 +780,10 @@ const CODE = {
   tag: 'Station 2',
   blurb: 'Läuft der Block oder nicht? Und welche Umformung ist wirklich gleichwertig? Alles in C#.',
   sample: 'if (!user.IsBanned && (user.IsAdmin || isOwner))',
+  roundInfo: () => 'Pro Runde 10 von ' + (SNIPPETS.length + EQUIV.length + CODE_MC.length) + ' Rätseln',
   build() {
-    const runs = shuffle(SNIPPETS).slice(0, 5).sort(byTier).map(s => ({ type: 'run', s, env: sampleEnv(effective(s), Math.random() < 0.5) }));
-    const eqs = shuffle(EQUIV.concat(CODE_MC)).slice(0, 5).sort(byTier).map(p => ({ type: p.mc ? 'mc' : 'eq', p, opts: shuffle(p.mc ? p.options : p.opts) }));
+    const runs = draw('codeRun', SNIPPETS, 5).sort(byTier).map(s => ({ type: 'run', s, env: sampleEnv(effective(s), Math.random() < 0.5) }));
+    const eqs = draw('codeEq', EQUIV.concat(CODE_MC), 5).sort(byTier).map(p => ({ type: p.mc ? 'mc' : 'eq', p, opts: shuffle(p.mc ? p.options : p.opts) }));
     return [runs[0], runs[1], eqs[0], runs[2], eqs[1], runs[3], eqs[2], runs[4], eqs[3], eqs[4]];
   },
   render(it, el) {
@@ -931,8 +951,9 @@ const PROMISE = {
   tag: 'Station 3',
   blurb: 'Wann ist ein Wenn-dann gebrochen? Klingt einfach, ist aber die häufigste Denkfalle der Logik.',
   sample: 'WENN Regen DANN Schirm',
+  roundInfo: () => 'Pro Runde 10 von ' + PROMISES.length + ' Aussagen',
   build() {
-    return shuffle(PROMISES).slice(0, 10).sort(byTier).map(p => ({ p, env: sampleEnv(p.ast, Math.random() < 0.5) }));
+    return draw('promise', PROMISES, 10).sort(byTier).map(p => ({ p, env: sampleEnv(p.ast, Math.random() < 0.5) }));
   },
   render(it, el) {
     const p = it.p;
@@ -992,8 +1013,9 @@ const WASON_STATION = {
   tag: 'Station 4',
   blurb: 'Prüfe eine Regel mit so wenigen Handgriffen wie möglich. Ein berühmtes Experiment, an dem die meisten scheitern.',
   sample: '[ E ]  [ K ]  [ 4 ]  [ 7 ]',
+  roundInfo: () => 'Pro Runde alle ' + WASON.length + ' Regeln',
   build() {
-    return shuffle(WASON).map(set => {
+    return draw('wason', WASON, WASON.length).map(set => {
       const cards = shuffle([
         { domain: 'P', val: true, face: set.P.yes, back: Math.random() < 0.5 ? set.Qalt.yes : set.Qalt.no, backVal: null },
         { domain: 'P', val: false, face: set.P.no, back: Math.random() < 0.5 ? set.Qalt.yes : set.Qalt.no },
@@ -1296,10 +1318,11 @@ const GRENZ = {
   tag: 'Station 5 · Bonus',
   blurb: 'Arrays, Indizes und Zaunpfähle. Einer zu viel, einer zu wenig oder genau richtig?',
   sample: 'for (int i = 0; i <= arr.Length; i++)',
+  roundInfo: () => 'Pro Runde 10 von ' + (LOOPS.length + RANGES.length + GRENZ_MC.length) + ' Aufgaben, die Zahlen sind jedes Mal neu',
   build() {
-    const loops = shuffle(LOOPS).slice(0, 4).map(makeLoop);
-    const ranges = shuffle(RANGES).slice(0, 2).map(makeRange);
-    const mcs = shuffle(GRENZ_MC).slice(0, 4).map(g => g());
+    const loops = draw('grenzLoop', LOOPS, 4).map(makeLoop);
+    const ranges = draw('grenzRange', RANGES, 2).map(makeRange);
+    const mcs = draw('grenzMc', GRENZ_MC, 4).map(g => g());
     return [loops[0], mcs[0], ranges[0], loops[1], mcs[1], loops[2], ranges[1], mcs[2], loops[3], mcs[3]];
   },
   render(it, el) { renderChoice(el, it); }
@@ -1432,7 +1455,7 @@ function goHome() {
     const m = MODES[k];
     return '<button class="station' + (k === 'grenz' ? ' wide' : '') + '" data-m="' + k + '"><div class="eyebrow">' + m.tag + '</div><h2>' + esc(m.title) + '</h2><p>' + esc(m.blurb) + '</p>' +
       '<div class="sample">' + esc(m.sample) + '</div>' +
-      '<div class="meta"><span>' + (k === 'wason' ? '5 Regeln' : '10 Fragen') + '</span><span>Bestwert <b>' + (k in best ? best[k] : '–') + '</b> / ' + max[k] + '</span></div></button>';
+      '<div class="meta"><span>' + esc(m.roundInfo()) + '</span><span>Bestwert <b>' + (k in best ? best[k] : '–') + '</b> / ' + max[k] + '</span></div></button>';
   }).join('');
   $$('.station').forEach(b => { b.onclick = () => startMode(b.dataset.m); });
   showView('home');
