@@ -257,6 +257,24 @@ pre.code .op, code .op { color: var(--op); font-weight: 600; background: none; p
 .sheet .ex { color: var(--muted); }
 .sheet .wide { grid-column: 1 / -1; }
 
+/* Choice options, comments, wide station tile */
+.opt-body { min-width: 0; overflow-x: auto; }
+.opt-body code { font-size: 14px; white-space: nowrap; }
+.cm { color: var(--muted); font-style: italic; }
+.str { color: var(--true); }
+.station.wide { grid-column: 1 / -1; }
+
+/* Array cells (station 5) */
+.cells { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 8px; }
+.cell { position: relative; min-width: 46px; padding: 6px 8px 5px; border: 2px solid var(--line); border-radius: 8px; background: var(--panel); text-align: center; }
+.cell .val { font: 700 16px/1.25 var(--mono); }
+.cell .ix { font: 11px/1.3 var(--mono); color: var(--muted); }
+.cell .ix.hat { color: var(--op); }
+.cell.hit { border-color: var(--accent); background: var(--accent-soft); }
+.cell.ghost { border-style: dashed; border-color: var(--false); background: var(--false-soft); color: var(--false); }
+.cell .ord { position: absolute; top: -9px; right: -8px; min-width: 18px; padding: 3px 5px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 700 10px/1 var(--mono); }
+.fence { font: 16px/1.2 var(--mono); overflow-x: auto; white-space: nowrap; padding-block: 4px; }
+
 @media (prefers-reduced-motion: reduce) {
   .card3 .inner, .station { transition: none; }
 }
@@ -273,11 +291,11 @@ pre.code .op, code .op { color: var(--op); font-weight: 600; background: none; p
   <main id="home">
     <section class="hero">
       <h1>Logik trainieren, ohne eine einzige <em>Formel</em> zu pauken.</h1>
-      <p>Vier Stationen aus dem Alltag und aus dem Code. Jede Antwort wird Schritt für Schritt aufgelöst, damit du siehst, wo genau das UND gekippt ist.</p>
+      <p>Fünf Stationen aus dem Alltag und aus dem Code. Jede Antwort wird Schritt für Schritt aufgelöst, damit du siehst, wo genau das UND gekippt ist.</p>
       <div class="legend">
         <span class="lamp on-true"><i></i>wahr</span>
         <span class="lamp on-false"><i></i>falsch</span>
-        <span>Tastatur: <kbd>←</kbd><kbd>→</kbd> antworten, <kbd>Enter</kbd> weiter, <kbd>H</kbd> Hinweis</span>
+        <span>Tastatur: <kbd>←</kbd><kbd>→</kbd> antworten, <kbd>1</kbd>–<kbd>4</kbd> auswählen, <kbd>Enter</kbd> weiter, <kbd>H</kbd> Hinweis</span>
       </div>
     </section>
     <section class="stations" id="stations"></section>
@@ -454,7 +472,22 @@ const TAGS = {
   KONTRA: ['OHNE … KEIN', '„Ohne B kein A“ heißt: WENN A DANN B. Gleichwertig ist: WENN NICHT B, DANN NICHT A.'],
   VORRANG: ['Vorrang in C#', '&& bindet stärker als ||. Der Ausdruck a || b && c bedeutet a || (b && c). Im Zweifel Klammern setzen.'],
   GUARD: ['Guard Clause', 'Ein Guard (if … return;) beschreibt, wann abgebrochen wird. Der Code danach läuft nur, wenn die Guard-Bedingung falsch ist.'],
-  WASON: ['Regeln prüfen', 'Verletzen kann eine Regel WENN A DANN B nur ein Fall mit A und ohne B. Umdrehen musst du also die Karte mit A und die Karte ohne B. Die Karte mit B ist egal.']
+  WASON: ['Regeln prüfen', 'Verletzen kann eine Regel WENN A DANN B nur ein Fall mit A und ohne B. Umdrehen musst du also die Karte mit A und die Karte ohne B. Die Karte mit B ist egal.'],
+  VERGLEICH: ['Vergleiche verneinen', 'Das Gegenteil von < ist >=, nicht >. Verneint man eine ganze Bereichsprüfung, kippt außerdem && zu ||.'],
+  WEDER: ['Weder … noch', '„Weder A noch B“ heißt x != A && x != B. Mit || ist die Bedingung immer wahr, weil x nie gleichzeitig A und B sein kann.'],
+  PATTERN: ['Patterns in C#', 'In Patterns bindet not stärker als or: is not \'a\' or \'b\' heißt (is not \'a\') or (is \'b\'). Gemeint ist fast immer is not (\'a\' or \'b\').'],
+  NULLABLE: ['bool?', 'Ein bool? hat drei Werte: true, false und null. != true ist auch bei null wahr, == false dagegen nicht.'],
+  KURZSCHLUSS: ['Kurzschluss', '&& und || werten von links nach rechts aus und hören auf, sobald das Ergebnis feststeht. Darum schützt list != null && list.Count > 0 vor dem Null-Zugriff, in umgekehrter Reihenfolge nicht. & und | werten immer beide Seiten aus.'],
+  LINQ: ['Any und All', '!Any(p) ist dasselbe wie All(!p), und !All(p) dasselbe wie Any(!p). All auf einer leeren Sequenz ist immer true.'],
+  ELSE: ['else if', 'Ein else if läuft nur, wenn alle Bedingungen davor falsch waren. Diese Verneinung steckt unsichtbar mit in der Bedingung.'],
+  ABSORPTION: ['Absorption', 'a || (a && b) ist einfach a: Ist a wahr, ist alles wahr. Ist a falsch, ist auch die Klammer falsch.'],
+  XOR3: ['XOR mit drei Werten', 'a ^ b ^ c ist wahr, wenn eine ungerade Anzahl wahr ist, also auch bei allen dreien. Für „genau einer“ reicht das nicht.'],
+  SCHLEIFE: ['Schleifengrenzen', 'Ein Array mit n Elementen hat die Indizes 0 bis n − 1. Vorwärts: i = 0; i < n. Rückwärts: i = n − 1; i >= 0. Ein <= n oder ein Start bei n ist fast immer ein Fehler.'],
+  RANGE: ['Ranges in C#', 'a..b schließt a ein und b aus. ^1 ist das letzte Element, ^0 zeigt hinter das Ende: arr[^0] wirft eine Exception, arr[..^0] liefert alles.'],
+  ZAUN: ['Zaunpfahl', 'Zählst du Punkte oder Abstände? n Abstände haben n + 1 Pfosten. Von a bis b einschließlich sind es b − a + 1 Elemente.'],
+  PARAM: ['Länge oder Ende?', 'Bei Substring(start, length), GetRange(index, count) und Enumerable.Range(start, count) ist der zweite Parameter eine Anzahl, kein Endindex.'],
+  PAGE: ['Aufrunden', 'Seitenzahl = (total + pageSize − 1) / pageSize. total / pageSize + 1 stimmt nur, wenn die Division einen Rest hat.'],
+  REMOVE: ['Index-Verschiebung', 'Entfernst du Element i, rutschen alle folgenden eine Position nach vorn. Das nächste Element landet auf i und wird übersprungen. Rückwärts iterieren oder RemoveAll verwenden.']
 };
 function tipHtml(tags) {
   const uniq = [...new Set(tags)];
@@ -555,11 +588,40 @@ const V_CODE = {
   debug: boolVar('config.DebugMode'),
   prod: boolVar('env.IsProduction'),
   flag: boolVar('flags.NewCheckout'),
-  beta: boolVar('user.IsBetaTester')
+  beta: boolVar('user.IsBetaTester'),
+  card: boolVar('useCard'),
+  paypal: boolVar('usePayPal'),
+  invoice: boolVar('useInvoice'),
+  // Atoms over a concrete state (puzzles with a domain): calc(state) gives the truth value.
+  ge0: { code: 'i >= 0', complex: true, calc: s => s.i >= 0 },
+  ltN: { code: 'i < list.Count', complex: true, calc: s => s.i < s.n },
+  lt0: { code: 'i < 0', complex: true, calc: s => s.i < 0 },
+  geN: { code: 'i >= list.Count', complex: true, calc: s => s.i >= s.n },
+  le0: { code: 'i <= 0', complex: true, calc: s => s.i <= 0 },
+  gtN: { code: 'i > list.Count', complex: true, calc: s => s.i > s.n },
+  neDraft: { code: 'status != Status.Draft', complex: true, calc: s => s.st !== 'Draft' },
+  neArch: { code: 'status != Status.Archived', complex: true, calc: s => s.st !== 'Archived' },
+  eqDraft: { code: 'status == Status.Draft', complex: true, calc: s => s.st === 'Draft' },
+  eqArch: { code: 'status == Status.Archived', complex: true, calc: s => s.st === 'Archived' },
+  neA: { code: "c != 'a'", complex: true, calc: s => s.c !== 'a' },
+  neB: { code: "c != 'b'", complex: true, calc: s => s.c !== 'b' },
+  eqB: { code: "c == 'b'", complex: true, calc: s => s.c === 'b' },
+  neTrue: { code: 'user?.IsAdmin != true', complex: true, calc: s => s.a !== true },
+  eqFalse: { code: 'user?.IsAdmin == false', complex: true, calc: s => s.a === false },
+  coalesce: { code: 'user?.IsAdmin ?? false', complex: true, calc: s => s.a === true },
+  notNull: { code: 'user != null', complex: true, calc: s => s.a !== null },
+  adminPlain: { code: 'user.IsAdmin', calc: s => s.a === true },
+  anyOpen: { code: 'orders.Any(o => o.IsOpen)', calc: s => s.o.some(x => x) },
+  allOpen: { code: 'orders.All(o => o.IsOpen)', calc: s => s.o.every(x => x) },
+  allClosed: { code: 'orders.All(o => !o.IsOpen)', calc: s => s.o.every(x => !x) },
+  anyClosed: { code: 'orders.Any(o => !o.IsOpen)', calc: s => s.o.some(x => !x) }
 };
 const C = (n, min) => code(n, V_CODE, !!min);
 const kw = s => '<span class="kw">' + s + '</span>';
 const call = s => '<span class="call">' + esc(s) + '</span>';
+const cm = s => '<span class="cm">' + esc(s) + '</span>';
+const str = s => '<span class="str">' + esc(s) + '</span>';
+const opS = s => '<span class="op">' + s + '</span>';
 
 const SNIPPETS = [
   { tier: 1, tags: ['UND'], kind: 'if', cond: and(at('login'), at('items')), body: 'ShowCheckoutButton();' },
@@ -581,16 +643,21 @@ function snippetHtml(s) {
   }
   return s.guards.map(g => kw('if') + ' (' + C(g, s.min) + ') ' + kw('return') + ';').join('\n') + '\n' + call(s.body);
 }
+function pairsHtml(pairs) {
+  return '<table>' + pairs.map(([n, v]) => {
+    const cls = v === 'true' ? 'v-true' : v === 'false' ? 'v-false' : '';
+    return '<tr><td>' + esc(n) + '</td><td class="eq">=</td><td class="' + cls + '">' + esc(v) + '</td></tr>';
+  }).join('') + '</table>';
+}
 function stateHtml(keys, env) {
-  const rows = [];
+  const pairs = [];
   const seen = new Set();
   keys.forEach(k => V_CODE[k].state(env[k]).forEach(([n, v]) => {
     if (seen.has(n)) { return; }
     seen.add(n);
-    const cls = v === 'true' ? 'v-true' : v === 'false' ? 'v-false' : '';
-    rows.push('<tr><td>' + esc(n) + '</td><td class="eq">=</td><td class="' + cls + '">' + esc(v) + '</td></tr>');
+    pairs.push([n, v]);
   }));
-  return '<table>' + rows.join('') + '</table>';
+  return pairsHtml(pairs);
 }
 
 const EQUIV = [
@@ -615,7 +682,78 @@ const EQUIV = [
     display: () => C(at('admin')) + ' <span class="op">!=</span> ' + C(at('beta')),
     opts: [xor(at('admin'), at('beta')), not(and(at('admin'), at('beta'))), or(at('admin'), at('beta'))] },
   { tier: 4, tags: ['WENNDANN', 'DEMORGAN'], orig: or(not(at('banned')), at('admin')),
-    opts: [not(and(at('banned'), not(at('admin')))), not(or(at('banned'), at('admin'))), and(not(at('banned')), at('admin'))] }
+    opts: [not(and(at('banned'), not(at('admin')))), not(or(at('banned'), at('admin'))), and(not(at('banned')), at('admin'))] },
+  { tier: 3, tags: ['VERGLEICH', 'DEMORGAN'], origLabel: '!valid', orig: not(and(at('ge0'), at('ltN'))),
+    display: () => kw('bool') + ' valid = ' + C(and(at('ge0'), at('ltN'))) + ';',
+    q: 'Welche Bedingung ist genau dann wahr, wenn valid falsch ist?',
+    domain: [-1, 0, 1, 2, 3, 4].map(i => ({ i, n: 3 })), state: s => [['i', String(s.i)], ['list.Count', String(s.n)]],
+    opts: [or(at('lt0'), at('geN')), and(at('lt0'), at('geN')), or(at('le0'), at('gtN'))] },
+  { tier: 2, tags: ['WEDER', 'DEMORGAN'], origLabel: 'Ziel', orig: and(at('neDraft'), at('neArch')),
+    display: () => cm('// Ziel: status ist weder Draft noch Archived') + '\n' + kw('if') + ' (' + cm('???') + ')\n{\n    ' + call('Publish(post);') + '\n}',
+    q: 'Welche Bedingung erfüllt das Ziel?',
+    domain: ['Draft', 'Published', 'Archived'].map(st => ({ st })), state: s => [['status', 'Status.' + s.st]],
+    opts: [or(at('neDraft'), at('neArch')), and(at('neDraft'), at('neArch')), not(and(at('eqDraft'), at('eqArch')))] },
+  { tier: 4, tags: ['PATTERN', 'VORRANG'], orig: or(at('neA'), at('eqB')),
+    display: () => kw('if') + ' (c ' + kw('is not') + ' ' + str("'a'") + ' ' + kw('or') + ' ' + str("'b'") + ') ' + call('Reject();'),
+    q: 'Was prüft diese Bedingung tatsächlich?',
+    note: "Der Compiler liest (c is not 'a') or (c is 'b'), denn not bindet stärker als or. Weil 'b' ohnehin nicht 'a' ist, ändert das or 'b' nichts. Gemeint war vermutlich c is not ('a' or 'b').",
+    domain: ['a', 'b', 'x'].map(c => ({ c })), state: s => [['c', "'" + s.c + "'"]],
+    opts: [at('neA'), and(at('neA'), at('neB')), at('eqB')] },
+  { tier: 4, tags: ['NULLABLE'], orig: at('neTrue'),
+    display: () => kw('if') + ' (' + C(at('neTrue')) + ') ' + call('Deny();'),
+    note: 'user?.IsAdmin ist vom Typ bool? und hat drei mögliche Werte: true, false und null (wenn user null ist).',
+    domain: [{ a: null }, { a: true }, { a: false }], state: s => s.a === null ? [['user', 'null']] : [['user.IsAdmin', String(s.a)]],
+    opts: [at('eqFalse'), not(at('coalesce')), and(at('notNull'), not(at('adminPlain')))] },
+  { tier: 3, tags: ['LINQ', 'DEMORGAN'], orig: not(at('anyOpen')),
+    domain: [[], [true], [false], [true, false], [true, true], [false, false]].map(o => ({ o })),
+    state: s => [['orders', s.o.length ? '[' + s.o.map(x => x ? 'offen' : 'erledigt').join(', ') + ']' : '[ ] (leer)']],
+    opts: [at('allClosed'), not(at('allOpen')), at('anyClosed')] },
+  { tier: 2, tags: ['ELSE', 'UND', 'NICHT'], orig: and(at('admin'), not(at('locked'))),
+    display: () => kw('if') + ' (' + C(and(at('admin'), at('locked'))) + ') ' + call('Unlock(post);') + '\n' + kw('else if') + ' (' + C(at('admin')) + ') ' + call('EditPost(post);'),
+    q: 'Unter welcher Bedingung wird EditPost(post) aufgerufen?',
+    opts: [and(at('admin'), not(at('locked'))), at('admin'), or(at('admin'), not(at('locked')))] },
+  { tier: 3, tags: ['ELSE'], orig: and(not(at('admin')), at('owner')), ctx: o => and(not(at('admin')), o), ctxLabel: 'EditOwn() läuft',
+    display: () => kw('if') + ' (' + C(at('admin')) + ') ' + call('EditAny();') + '\n' + kw('else if') + ' (' + C(and(not(at('admin')), at('owner'))) + ') ' + call('EditOwn();'),
+    q: 'Welche kürzere Bedingung im else if verhält sich genauso?',
+    opts: [at('owner'), and(at('admin'), at('owner')), or(not(at('admin')), at('owner'))] },
+  { tier: 2, tags: ['ABSORPTION'], orig: or(at('admin'), and(at('admin'), at('owner'))),
+    q: 'Welche einfachere Bedingung verhält sich in jedem Fall gleich?',
+    opts: [at('admin'), at('owner'), and(at('admin'), at('owner'))] },
+  { tier: 4, tags: ['XOR3', 'XOR'], origLabel: 'Ziel',
+    orig: or(and(at('card'), not(at('paypal')), not(at('invoice'))), and(not(at('card')), at('paypal'), not(at('invoice'))), and(not(at('card')), not(at('paypal')), at('invoice'))),
+    display: () => cm('// Ziel: genau eine Zahlungsart ist gewählt') + '\n' + kw('if') + ' (' + cm('???') + ') ' + call('Checkout();'),
+    q: 'Welche Bedingung erfüllt das Ziel?',
+    opts: [xor(xor(at('card'), at('paypal')), at('invoice')), or(at('card'), at('paypal'), at('invoice')),
+      and(xor(xor(at('card'), at('paypal')), at('invoice')), not(and(at('card'), at('paypal'), at('invoice'))))] }
+];
+
+/* Code puzzles that are about behaviour rather than truth values */
+const CODE_MC = [
+  { tier: 2, mc: true, tags: ['KURZSCHLUSS'],
+    display: () => cm('// vorher') + '\n' + kw('if') + ' (list ' + opS('!=') + ' ' + kw('null') + ' ' + opS('&amp;&amp;') + ' list.Count ' + opS('&gt;') + ' 0) ' + call('Process(list);') + '\n' +
+      cm('// nach dem Refactoring') + '\n' + kw('if') + ' (list.Count ' + opS('&gt;') + ' 0 ' + opS('&amp;&amp;') + ' list ' + opS('!=') + ' ' + kw('null') + ') ' + call('Process(list);'),
+    q: 'Verhält sich die neue Version immer gleich?',
+    options: [
+      { html: 'Ja, bei <code>&amp;&amp;</code> ist die Reihenfolge egal.', ok: false },
+      { html: 'Nein, bei <code>list == null</code> wirft die neue Version eine NullReferenceException.', ok: true },
+      { html: 'Nein, bei einer leeren Liste wird <code>Process</code> jetzt aufgerufen.', ok: false }],
+    explain: 'In der Wahrheitstafel ist <code>&amp;&amp;</code> kommutativ. C# wertet aber von links nach rechts aus und hört auf, sobald das Ergebnis feststeht (Kurzschluss). Vorher hat <code>list != null</code> den Zugriff auf <code>list.Count</code> geschützt. Jetzt kommt <code>list.Count</code> zuerst und wird auch bei <code>null</code> ausgewertet.' },
+  { tier: 3, mc: true, tags: ['KURZSCHLUSS'],
+    display: () => kw('if') + ' (user ' + opS('!=') + ' ' + kw('null') + ' ' + opS('&amp;') + ' user.IsAdmin) ' + call('ShowAdminMenu();'),
+    q: 'Was passiert, wenn user null ist?',
+    options: [
+      { html: 'Die Bedingung ist false, das Menü erscheint nicht.', ok: false },
+      { html: 'Es fliegt eine NullReferenceException.', ok: true },
+      { html: 'Das kompiliert nicht, <code>&amp;</code> geht nur mit Zahlen.', ok: false }],
+    explain: 'Ein einzelnes <code>&amp;</code> ist bei <code>bool</code> ein logisches UND ohne Kurzschluss. Es wertet immer beide Seiten aus, also auch <code>user.IsAdmin</code>, obwohl <code>user</code> null ist. Mit <code>&amp;&amp;</code> wäre nach dem ersten false Schluss.' },
+  { tier: 3, mc: true, tags: ['LINQ', 'WENNDANN'],
+    display: () => kw('var') + ' orders = ' + kw('new') + ' List&lt;Order&gt;();\n' + kw('if') + ' (orders.All(o ' + opS('=&gt;') + ' o.IsPaid))\n{\n    ' + call('CloseAccount();') + '\n}',
+    q: 'Wird CloseAccount() aufgerufen?',
+    options: [
+      { html: 'Ja.', ok: true },
+      { html: 'Nein, es gibt ja keine bezahlte Bestellung.', ok: false },
+      { html: 'Nein, <code>All</code> wirft bei einer leeren Liste eine InvalidOperationException.', ok: false }],
+    explain: '<code>All</code> sucht ein Gegenbeispiel, also eine Bestellung, die nicht bezahlt ist. In einer leeren Liste gibt es keins, darum ist das Ergebnis <code>true</code>. Das ist dasselbe Prinzip wie in Station 3: „Jede Bestellung ist bezahlt“ heißt WENN Bestellung DANN bezahlt, und ohne Bestellung kann die Aussage nicht gebrochen werden. Soll eine leere Liste nicht zählen, gehört <code>orders.Any() &amp;&amp;</code> davor.' }
 ];
 
 const CODE = {
@@ -624,11 +762,18 @@ const CODE = {
   blurb: 'Läuft der Block oder nicht? Und welche Umformung ist wirklich gleichwertig? Alles in C#.',
   sample: 'if (!user.IsBanned && (user.IsAdmin || isOwner))',
   build() {
-    const runs = shuffle(SNIPPETS).slice(0, 6).sort(byTier).map(s => ({ type: 'run', s, env: sampleEnv(effective(s), Math.random() < 0.5) }));
-    const eqs = shuffle(EQUIV).slice(0, 4).sort(byTier).map(p => ({ type: 'eq', p, opts: shuffle(p.opts) }));
-    return [runs[0], runs[1], eqs[0], runs[2], eqs[1], runs[3], eqs[2], runs[4], eqs[3], runs[5]];
+    const runs = shuffle(SNIPPETS).slice(0, 5).sort(byTier).map(s => ({ type: 'run', s, env: sampleEnv(effective(s), Math.random() < 0.5) }));
+    const eqs = shuffle(EQUIV.concat(CODE_MC)).slice(0, 5).sort(byTier).map(p => ({ type: p.mc ? 'mc' : 'eq', p, opts: shuffle(p.mc ? p.options : p.opts) }));
+    return [runs[0], runs[1], eqs[0], runs[2], eqs[1], runs[3], eqs[2], runs[4], eqs[3], eqs[4]];
   },
-  render(it, el) { return it.type === 'run' ? renderRun(it, el) : renderEq(it, el); }
+  render(it, el) {
+    if (it.type === 'run') { return renderRun(it, el); }
+    if (it.type === 'eq') { return renderEq(it, el); }
+    return renderChoice(el, {
+      top: '<pre class="code">' + it.p.display() + '</pre>', q: esc(it.p.q), opts: it.opts, tags: it.p.tags,
+      explain: () => '<p>' + it.p.explain + '</p>'
+    });
+  }
 };
 
 function renderRun(it, el) {
@@ -661,38 +806,83 @@ function renderRun(it, el) {
   });
 }
 
-function renderEq(it, el) {
-  const p = it.p;
-  el.innerHTML =
-    '<pre class="code">' + (p.display ? p.display() : C(p.orig, p.min)) + '</pre>' +
-    '<p class="q">' + esc(p.q || 'Welche Bedingung verhält sich in jedem Fall genau gleich?') + '</p>' +
-    '<div class="opts">' + it.opts.map((o, i) => '<button class="opt" data-i="' + i + '"><span class="num">' + (i + 1) + '</span><code>' + C(o, p.min) + '</code></button>').join('') + '</div>';
+/* Generic multiple choice: spec = { top, q (html), opts: [{ html, ok }], tags, explain(chosenIndex) -> html } */
+function renderChoice(el, spec) {
+  el.innerHTML = (spec.top || '') + '<p class="q">' + spec.q + '</p><div class="opts">' +
+    spec.opts.map((o, i) => '<button class="opt" data-i="' + i + '"><span class="num">' + (i + 1) + '</span><span class="opt-body">' + o.html + '</span></button>').join('') + '</div>';
   const choose = i => {
     if (S.answered) { return; }
-    const chosen = it.opts[i];
-    const correctIdx = it.opts.findIndex(o => !counterexample(p.orig, o));
-    const ok = i === correctIdx;
+    const ci = spec.opts.findIndex(o => o.ok);
     $$('.opt', el).forEach((b, j) => {
       b.disabled = true;
-      if (j === correctIdx) { b.classList.add('is-right'); }
+      if (j === ci) { b.classList.add('is-right'); }
       else if (j === i) { b.classList.add('is-wrong'); }
     });
-    const keys = varsOf(chosen, varsOf(p.orig));
-    let html = '';
-    if (!ok) {
-      const ce = counterexample(p.orig, chosen);
-      html += '<p>Gegenbeispiel, bei dem sich deine Wahl anders verhält:</p><div class="state">' + stateHtml(keys, ce) + '</div>' +
-        '<p>Original: ' + lamp(ev(p.orig, ce)) + ' &nbsp; Deine Wahl: ' + lamp(ev(chosen, ce)) + '</p>';
-    } else {
-      html += '<p>In allen ' + (1 << keys.length) + ' Kombinationen liefern beide denselben Wert.</p>';
-    }
-    const cols = [{ label: 'Original', ast: p.orig }].concat(it.opts.map((o, j) => ({ label: 'Option ' + (j + 1), ast: o })));
-    html += '<div class="sub">Wahrheitstafel (rot umrandet: weicht vom Original ab)</div>' +
-      truthTable(keys, k => esc(V_CODE[k].code), cols, { diff: true });
-    resolve(ok, html, p.tags);
+    resolve(i === ci, spec.explain(i), spec.tags);
   };
   $$('.opt', el).forEach(b => { b.onclick = () => choose(+b.dataset.i); });
-  it.opts.forEach((_, i) => { S.keys[String(i + 1)] = () => choose(i); });
+  spec.opts.forEach((_, i) => { S.keys[String(i + 1)] = () => choose(i); });
+}
+
+/* Equivalence puzzles. Boolean puzzles compare over all variable combinations;
+   puzzles with a `domain` compare over concrete states (atoms then carry calc(state)).
+   `ctx` wraps a condition in its surrounding control flow (e.g. the negation an else if carries). */
+function eqEval(p, ast, row) {
+  if (!p.domain) { return ev(ast, row); }
+  const e = {};
+  varsOf(ast).forEach(k => { e[k] = V_CODE[k].calc(row); });
+  return ev(ast, e);
+}
+const eqTarget = p => p.ctx ? p.ctx(p.orig) : p.orig;
+const eqEff = (p, o) => p.ctx ? p.ctx(o) : o;
+const eqRows = (p, asts) => p.domain || allEnvs(asts.reduce((ks, a) => varsOf(a, ks), []));
+const eqSame = (p, a, b) => !eqRows(p, [a, b]).some(r => eqEval(p, a, r) !== eqEval(p, b, r));
+function eqTable(p, cols) {
+  const asts = cols.map(c => c.ast);
+  const keys = p.domain ? [] : asts.reduce((ks, a) => varsOf(a, ks), []);
+  const rows = p.domain || allEnvs(keys);
+  const wf = v => v ? '<span class="w">W</span>' : '<span class="f">F</span>';
+  let h = '<div class="ttwrap"><table class="tt"><thead><tr>' +
+    (p.domain ? '<th>Zustand</th>' : keys.map(k => '<th>' + esc(V_CODE[k].code) + '</th>').join('')) +
+    cols.map(c => '<th>' + c.label + '</th>').join('') + '</tr></thead><tbody>';
+  rows.forEach(r => {
+    const ref = eqEval(p, asts[0], r);
+    h += '<tr>' + (p.domain ? '<td>' + esc(p.state(r).map(x => x[0] + ' = ' + x[1]).join(', ')) + '</td>' : keys.map(k => '<td>' + wf(r[k]) + '</td>').join(''));
+    asts.forEach((a, i) => {
+      const v = eqEval(p, a, r);
+      h += '<td' + (i > 0 && v !== ref ? ' class="diff"' : '') + '>' + wf(v) + '</td>';
+    });
+    h += '</tr>';
+  });
+  return h + '</tbody></table></div>';
+}
+function renderEq(it, el) {
+  const p = it.p;
+  const target = eqTarget(p);
+  const label = esc(p.origLabel || 'Original');
+  renderChoice(el, {
+    top: '<pre class="code">' + (p.display ? p.display() : C(p.orig, p.min)) + '</pre>',
+    q: esc(p.q || 'Welche Bedingung verhält sich in jedem Fall genau gleich?'),
+    opts: it.opts.map(o => ({ html: '<code>' + C(o, p.min) + '</code>', ok: eqSame(p, target, eqEff(p, o)) })),
+    tags: p.tags,
+    explain: i => {
+      const chosen = eqEff(p, it.opts[i]);
+      const rows = eqRows(p, [target, chosen]);
+      const ce = rows.find(r => eqEval(p, target, r) !== eqEval(p, chosen, r));
+      let html = '';
+      if (ce) {
+        html += '<p>Gegenbeispiel, bei dem sich deine Wahl anders verhält:</p><div class="state">' +
+          (p.domain ? pairsHtml(p.state(ce)) : stateHtml(varsOf(chosen, varsOf(target)), ce)) + '</div>' +
+          '<p>' + label + ': ' + lamp(eqEval(p, target, ce)) + ' &nbsp; Deine Wahl: ' + lamp(eqEval(p, chosen, ce)) + '</p>';
+      } else {
+        html += '<p>In allen ' + rows.length + (p.domain ? ' Fällen' : ' Kombinationen') + ' liefern beide denselben Wert.</p>';
+      }
+      if (p.note) { html += '<p class="note">' + esc(p.note) + '</p>'; }
+      const cols = [{ label, ast: target }].concat(it.opts.map((o, j) => ({ label: 'Option ' + (j + 1), ast: eqEff(p, o) })));
+      html += '<div class="sub">Wahrheitstafel' + (p.ctxLabel ? ' für „' + esc(p.ctxLabel) + '“' : '') + ' (rot umrandet: weicht ab)</div>' + eqTable(p, cols);
+      return html;
+    }
+  });
 }
 
 /* ============================================================
@@ -867,9 +1057,258 @@ const WASON_STATION = {
 };
 
 /* ============================================================
+   Station 5: Grenzfälle (Arrays, Indizes, Zaunpfähle)
+   ============================================================ */
+const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+const sortedPick = k => shuffle(PRIMES).slice(0, k).sort((a, b) => a - b);
+const fmtList = a => a.length ? '{ ' + a.join(', ') + ' }' : '{ } (leer)';
+const textOpts = (correct, wrongs) => shuffle([{ html: esc(correct), ok: true }].concat(
+  [...new Set(wrongs.map(String))].filter(w => w !== String(correct)).slice(0, 3).map(w => ({ html: esc(w), ok: false }))));
+
+/* Row of array cells. o.hits: visited indices in order, o.numbered: show visit order,
+   o.sel: highlighted indices, o.ghost: an index outside the array, o.hat: show ^ indices too */
+function cellsHtml(arr, o) {
+  o = o || {};
+  const n = arr.length;
+  const hits = o.hits || [];
+  const sel = o.sel || [];
+  const ixHtml = i => '<div class="ix">' + i + '</div>' + (o.hat ? '<div class="ix hat">^' + (n - i) + '</div>' : '');
+  const ghost = i => '<div class="cell ghost"><div class="val">✗</div>' + ixHtml(i) + '</div>';
+  let h = '';
+  if (o.ghost !== undefined && o.ghost < 0) { h += ghost(o.ghost); }
+  arr.forEach((v, i) => {
+    const ord = hits.indexOf(i);
+    const on = ord >= 0 || sel.includes(i);
+    h += '<div class="cell' + (on ? ' hit' : '') + '">' + (ord >= 0 && o.numbered ? '<span class="ord">' + (ord + 1) + '</span>' : '') +
+      '<div class="val">' + esc(v) + '</div>' + ixHtml(i) + '</div>';
+  });
+  if (o.ghost !== undefined && o.ghost >= n) { h += ghost(o.ghost); }
+  return '<div class="cells">' + h + '</div>';
+}
+
+/* Loops: simulated, distractors come from the same loop with start or bound shifted by one */
+const CMP = { '<': (a, b) => a < b, '<=': (a, b) => a <= b, '>': (a, b) => a > b, '>=': (a, b) => a >= b };
+const LOOPS = [
+  { startCode: '0', start: n => 0, op: '<=', rhsCode: 'arr.Length', rhs: n => n, step: 1, body: 'item' },
+  { startCode: '1', start: n => 1, op: '<', rhsCode: 'arr.Length', rhs: n => n, step: 1, body: 'item' },
+  { startCode: 'arr.Length', start: n => n, op: '>=', rhsCode: '0', rhs: n => 0, step: -1, body: 'item' },
+  { startCode: 'arr.Length - 1', start: n => n - 1, op: '>', rhsCode: '0', rhs: n => 0, step: -1, body: 'item' },
+  { startCode: 'arr.Length - 1', start: n => n - 1, op: '>=', rhsCode: '0', rhs: n => 0, step: -1, body: 'item' },
+  { startCode: '0', start: n => 0, op: '<', rhsCode: 'arr.Length', rhs: n => n, step: 1, body: 'pair' },
+  { startCode: '0', start: n => 0, op: '<', rhsCode: 'arr.Length - 1', rhs: n => n - 1, step: 1, body: 'pair' }
+];
+function simLoop(L, arr, dS, dR) {
+  const n = arr.length;
+  const rhs = L.rhs(n) + dR;
+  const out = [], log = [], hits = [];
+  let err = null;
+  for (let i = L.start(n) + dS, g = 0; g < 30; i += L.step, g++) {
+    const c = CMP[L.op](i, rhs);
+    const entry = { i, cond: i + ' ' + L.op + ' ' + rhs, c };
+    log.push(entry);
+    if (!c) { break; }
+    const bad = (L.body === 'pair' ? [i, i + 1] : [i]).find(k => k < 0 || k >= n);
+    if (bad !== undefined) { err = bad; entry.err = bad; break; }
+    const v = L.body === 'pair' ? arr[i + 1] - arr[i] : arr[i];
+    out.push(v);
+    hits.push(i);
+    entry.v = v;
+  }
+  return { out, err, log, hits };
+}
+function loopText(r) {
+  if (!r.out.length) { return r.err !== null ? 'sofort eine IndexOutOfRangeException' : 'keine Ausgabe'; }
+  return r.out.join(' ') + (r.err !== null ? ', dann IndexOutOfRangeException' : '');
+}
+function makeLoop(L) {
+  const arr = sortedPick(4);
+  const res = simLoop(L, arr, 0, 0);
+  const correct = loopText(res);
+  const wrongs = shuffle([[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1]].map(d => loopText(simLoop(L, arr, d[0], d[1]))));
+  const body = L.body === 'pair' ? 'Console.Write(arr[i + 1] - arr[i] + " ");' : 'Console.Write(arr[i] + " ");';
+  const head = kw('for') + ' (' + kw('int') + ' i = ' + esc(L.startCode) + '; i ' + opS(esc(L.op)) + ' ' + esc(L.rhsCode) + '; i' + opS(L.step > 0 ? '++' : '--') + ')';
+  return {
+    top: cellsHtml(arr) + '<pre class="code">' + kw('int') + '[] arr = { ' + arr.join(', ') + ' };\n' + head + '\n{\n    ' + call(body) + '\n}</pre>',
+    q: 'Was gibt die Schleife aus?',
+    opts: textOpts(correct, wrongs),
+    tags: ['SCHLEIFE'],
+    explain: () => {
+      const n = arr.length;
+      const lines = res.log.map(e => {
+        let act;
+        if (!e.c) { act = 'Bedingung falsch, die Schleife endet.'; }
+        else if (e.err !== undefined) { act = 'arr[' + e.err + '] gibt es nicht: IndexOutOfRangeException.'; }
+        else { act = 'Ausgabe ' + (L.body === 'pair' ? 'arr[' + (e.i + 1) + '] - arr[' + e.i + '] = ' + e.v : 'arr[' + e.i + '] = ' + e.v); }
+        return '<li><span class="expr mono">i = ' + e.i + ': ' + esc(e.cond) + ' → ' + esc(act) + '</span>' + lamp(e.c) + '</li>';
+      });
+      return '<p>arr.Length ist ' + n + ', gültige Indizes sind 0 bis ' + (n - 1) + '.</p>' +
+        cellsHtml(arr, { hits: res.hits, numbered: true, ghost: res.err !== null ? res.err : undefined }) +
+        '<div class="sub">Schritt für Schritt (Lampe: Schleifenbedingung)</div><ol class="steps">' + lines.join('') + '</ol>' +
+        '<p class="concl">Ausgabe: ' + esc(correct) + '</p>';
+    }
+  };
+}
+
+/* C# indices and ranges */
+const RANGES = [
+  { expr: 'arr[^1]', kind: 'index', at: { v: 1, hat: true } },
+  { expr: 'arr[^0]', kind: 'index', at: { v: 0, hat: true } },
+  { expr: 'arr[1..3]', kind: 'range', from: { v: 1 }, to: { v: 3 } },
+  { expr: 'arr[^2..]', kind: 'range', from: { v: 2, hat: true }, to: null },
+  { expr: 'arr[..2]', kind: 'range', from: null, to: { v: 2 } },
+  { expr: 'arr[2..^1]', kind: 'range', from: { v: 2 }, to: { v: 1, hat: true } }
+];
+const rangeOut = (arr, a, b) => a >= 0 && a <= b && b <= arr.length ? fmtList(arr.slice(a, b)) : 'ArgumentOutOfRangeException';
+const indexOut = (arr, k) => k >= 0 && k < arr.length ? String(arr[k]) : 'IndexOutOfRangeException';
+function makeRange(R) {
+  const arr = sortedPick(5);
+  const n = arr.length;
+  const pos = (x, def) => x == null ? def : (x.hat ? n - x.v : x.v);
+  const hatTxt = x => '^' + x.v + ' bedeutet arr.Length − ' + x.v + ' = ' + (n - x.v) + '.';
+  let correct, wrongs, why, cellOpts;
+  if (R.kind === 'index') {
+    const k = pos(R.at);
+    correct = indexOut(arr, k);
+    wrongs = [k - 1, k + 1, R.at.v].map(j => indexOut(arr, j));
+    why = (R.at.hat ? hatTxt(R.at) + ' ' : '') +
+      (k < n ? 'arr[' + k + '] ist ' + arr[k] + '.' : 'Index ' + k + ' liegt hinter dem letzten Element. ^0 zeigt auf das Ende selbst, nicht auf ein Element.');
+    cellOpts = k < n ? { sel: [k], hat: true } : { ghost: k, hat: true };
+  } else {
+    const a = pos(R.from, 0);
+    const b = pos(R.to, n);
+    correct = rangeOut(arr, a, b);
+    wrongs = [[a, b + 1], [a + 1, b + 1], [a - 1, b], [a, b - 1]].map(d => rangeOut(arr, d[0], d[1]));
+    const sel = [];
+    for (let j = a; j < b; j++) { sel.push(j); }
+    why = (R.from == null ? 'Ohne Start beginnt der Bereich bei 0. ' : R.from.hat ? 'Start: ' + hatTxt(R.from) + ' ' : '') +
+      (R.to == null ? 'Ohne Ende läuft der Bereich bis arr.Length = ' + n + '. ' : R.to.hat ? 'Ende: ' + hatTxt(R.to) + ' ' : '') +
+      'Der Bereich ' + a + '..' + b + ' beginnt bei Index ' + a + ' und hört vor Index ' + b + ' auf: ' + (sel.length ? 'Indizes ' + sel.join(', ') : 'nichts') + '.';
+    cellOpts = { sel, hat: true };
+  }
+  return {
+    top: cellsHtml(arr) + '<pre class="code">' + kw('int') + '[] arr = { ' + arr.join(', ') + ' };\n' + kw('var') + ' x = ' + esc(R.expr) + ';</pre>',
+    q: 'Was ist <code>x</code>?',
+    opts: textOpts(correct, shuffle(wrongs)),
+    tags: ['RANGE'],
+    explain: () => '<p>' + esc(why) + '</p>' + cellsHtml(arr, cellOpts) + '<p class="concl">x = ' + esc(correct) + '</p>'
+  };
+}
+
+/* Counting, parameters and index shifts. Each generator returns a choice spec. */
+const GRENZ_MC = [
+  () => {
+    const [L, s] = pick([[10, 2], [12, 3], [12, 2], [20, 4], [20, 5], [15, 3], [24, 4], [18, 3]]);
+    const k = L / s;
+    return {
+      q: esc('Ein Gartenzaun ist ' + L + ' m lang. Alle ' + s + ' m steht ein Pfosten, auch an beiden Enden. Wie viele Pfosten brauchst du?'),
+      opts: textOpts(k + 1, [k, k - 1]), tags: ['ZAUN'],
+      explain: () => '<p>' + L + ' m : ' + s + ' m = ' + k + ' Abstände. Pfosten gibt es immer einen mehr als Abstände: ' + (k + 1) + '.</p><div class="fence">┃' + '━━━┃'.repeat(k) + '</div>'
+    };
+  },
+  () => {
+    const a = rnd(2, 20), k = rnd(2, 6), d = a + k;
+    return {
+      q: esc('Anreise am ' + a + '. Mai, Abreise am ' + d + '. Mai. Wie viele Nächte bezahlst du im Hotel?'),
+      opts: textOpts(k, [k + 1, k - 1]), tags: ['ZAUN'],
+      explain: () => '<p>Gezählt werden die Nächte zwischen den Tagen: ' + d + ' − ' + a + ' = ' + k + '. Mit An- und Abreisetag bist du ' + (k + 1) + ' Tage vor Ort. Nächte sind die Abstände, Tage die Pfosten.</p>'
+    };
+  },
+  () => {
+    const p = rnd(10, 40), q = p + rnd(5, 12);
+    return {
+      q: esc('Du sollst Seite ' + p + ' bis einschließlich Seite ' + q + ' lesen. Wie viele Seiten sind das?'),
+      opts: textOpts(q - p + 1, [q - p, q - p + 2]), tags: ['ZAUN'],
+      explain: () => '<p>' + q + ' − ' + p + ' = ' + (q - p) + ' zählt nur die Schritte von Seite zu Seite. Die erste Seite kommt dazu: ' + (q - p + 1) + '.</p>'
+    };
+  },
+  () => {
+    const a = rnd(1, 4), b = a + rnd(3, 6);
+    return {
+      top: '<pre class="code">' + cm('// Elemente von Index ' + a + ' bis einschließlich ' + b) + '\n' + kw('var') + ' part = list.GetRange(' + a + ', ' + cm('???') + ');</pre>',
+      q: 'Was gehört an die Stelle von <code>???</code>?',
+      opts: textOpts(b - a + 1, [b - a, b]), tags: ['PARAM', 'ZAUN'],
+      explain: () => '<p>Der zweite Parameter von <code>GetRange(index, count)</code> ist die Anzahl, kein Endindex. Von Index ' + a + ' bis einschließlich ' + b + ' sind es ' + b + ' − ' + a + ' + 1 = ' + (b - a + 1) + ' Elemente.</p>'
+    };
+  },
+  () => {
+    const d = pick([{ s: 'CodeAnalyst', start: 4, len: 7 }, { s: 'user@example.com', start: 5, len: 7 }, { s: '2026-11-19', start: 5, len: 5 }]);
+    const lit = t => '"' + t + '"';
+    const variants = [d.s.substr(d.start, d.len), d.s.slice(d.start, d.len), d.s.substr(d.start - 1, d.len)];
+    const sel = [];
+    for (let j = d.start; j < d.start + d.len; j++) { sel.push(j); }
+    return {
+      top: '<pre class="code">' + kw('string') + ' s = ' + str(lit(d.s)) + ';\n' + kw('var') + ' part = s.Substring(' + d.start + ', ' + d.len + ');</pre>',
+      q: 'Was steht in <code>part</code>?',
+      opts: shuffle(variants.map((t, i) => ({ html: '<code>' + esc(lit(t)) + '</code>', ok: i === 0 }))), tags: ['PARAM'],
+      explain: () => '<p><code>Substring(startIndex, length)</code> nimmt ab Index ' + d.start + ' genau ' + d.len + ' Zeichen. Der zweite Parameter ist eine Länge, kein Endindex.</p>' + cellsHtml(d.s.split(''), { sel })
+    };
+  },
+  () => {
+    const s = rnd(2, 4), c = s + rnd(1, 3);
+    const seq = (a, b) => { const r = []; for (let j = a; j <= b; j++) { r.push(j); } return r.join(', '); };
+    return {
+      top: '<pre class="code">' + kw('var') + ' nums = Enumerable.Range(' + s + ', ' + c + ');</pre>',
+      q: 'Welche Zahlen enthält <code>nums</code>?',
+      opts: textOpts(seq(s, s + c - 1), [seq(s, c), seq(s, c - 1)]), tags: ['PARAM'],
+      explain: () => '<p><code>Enumerable.Range(start, count)</code> liefert ' + c + ' Zahlen ab ' + s + ', also bis ' + (s + c - 1) + '. Der zweite Parameter ist auch hier eine Anzahl.</p>'
+    };
+  },
+  () => {
+    const ps = pick([10, 20, 25]), m = rnd(2, 5), good = ps * m;
+    return {
+      top: '<pre class="code">' + kw('int') + ' pageSize = ' + ps + ';\n' + kw('int') + ' pages = total / pageSize ' + opS('+') + ' 1;</pre>',
+      q: 'Bei welchem Wert von <code>total</code> zeigt die Navigation eine leere Seite zu viel an?',
+      opts: textOpts(good, [good - rnd(1, ps - 1), good + rnd(1, ps - 1)]), tags: ['PAGE'],
+      explain: () => '<p>Bei total = ' + good + ' ergibt die Ganzzahl-Division genau ' + m + ', plus 1 sind ' + (m + 1) + ' Seiten. Nötig sind nur ' + m + '. Bei den anderen Werten bleibt ein Rest, dann ist das + 1 richtig. Für alle Fälle passt <code>(total + pageSize - 1) / pageSize</code>.</p>'
+    };
+  },
+  () => {
+    let list = [], res = [], log = [];
+    for (let g = 0; g < 200; g++) {
+      list = Array.from({ length: rnd(5, 6) }, () => rnd(1, 19));
+      res = list.slice();
+      log = [];
+      for (let i = 0; i < res.length; i++) {
+        const v = res[i];
+        if (v % 2 === 0) { res.splice(i, 1); log.push({ i, v, removed: true, skipped: res[i] }); }
+        else { log.push({ i, v, removed: false }); }
+      }
+      if (res.some(x => x % 2 === 0)) { break; }
+    }
+    const intended = list.filter(x => x % 2 !== 0);
+    const pre = '<pre class="code">' + cm('// alle geraden Zahlen entfernen') + '\n' + kw('var') + ' list = ' + kw('new') + ' List&lt;' + kw('int') + '&gt; { ' + list.join(', ') + ' };\n' +
+      kw('for') + ' (' + kw('int') + ' i = 0; i ' + opS('&lt;') + ' list.Count; i' + opS('++') + ')\n{\n    ' + kw('if') + ' (list[i] ' + opS('%') + ' 2 ' + opS('==') + ' 0)\n    {\n        ' + call('list.RemoveAt(i);') + '\n    }\n}</pre>';
+    return {
+      top: pre,
+      q: 'Was steht danach in <code>list</code>?',
+      opts: textOpts(fmtList(res), [fmtList(intended), 'ArgumentOutOfRangeException']), tags: ['REMOVE'],
+      explain: () => '<div class="sub">Schritt für Schritt</div><ol class="steps">' + log.map(e => '<li><span class="expr mono">' + esc(
+        'i = ' + e.i + ': list[' + e.i + '] = ' + e.v + (e.removed
+          ? ' ist gerade → RemoveAt(' + e.i + ').' + (e.skipped !== undefined ? ' Die ' + e.skipped + ' rutscht auf Index ' + e.i + ' und wird übersprungen.' : '')
+          : ' ist ungerade, bleibt.')) + '</span></li>').join('') + '</ol>' +
+        '<p class="concl">Ergebnis: ' + esc(fmtList(res)) + '</p>'
+    };
+  }
+];
+
+const GRENZ = {
+  title: 'Grenzfälle',
+  tag: 'Station 5 · Bonus',
+  blurb: 'Arrays, Indizes und Zaunpfähle. Einer zu viel, einer zu wenig oder genau richtig?',
+  sample: 'for (int i = 0; i <= arr.Length; i++)',
+  build() {
+    const loops = shuffle(LOOPS).slice(0, 4).map(makeLoop);
+    const ranges = shuffle(RANGES).slice(0, 2).map(makeRange);
+    const mcs = shuffle(GRENZ_MC).slice(0, 4).map(g => g());
+    return [loops[0], mcs[0], ranges[0], loops[1], mcs[1], loops[2], ranges[1], mcs[2], loops[3], mcs[3]];
+  },
+  render(it, el) { renderChoice(el, it); }
+};
+
+/* ============================================================
    Game controller
    ============================================================ */
-const MODES = { door: DOOR, code: CODE, promise: PROMISE, wason: WASON_STATION };
+const MODES = { door: DOOR, code: CODE, promise: PROMISE, wason: WASON_STATION, grenz: GRENZ };
 const S = { mode: null, items: [], i: 0, score: 0, streak: 0, results: [], answered: false, keys: {} };
 const BEST_KEY = 'wenn-und-aber-best';
 function loadBest() { try { return JSON.parse(localStorage.getItem(BEST_KEY)) || {}; } catch (e) { return {}; } }
@@ -988,10 +1427,10 @@ function endRound() {
 
 function goHome() {
   const best = loadBest();
-  const max = { door: 100, code: 100, promise: 100, wason: 50 };
+  const max = { door: 100, code: 100, promise: 100, wason: 50, grenz: 100 };
   $('#stations').innerHTML = Object.keys(MODES).map(k => {
     const m = MODES[k];
-    return '<button class="station" data-m="' + k + '"><div class="eyebrow">' + m.tag + '</div><h2>' + esc(m.title) + '</h2><p>' + esc(m.blurb) + '</p>' +
+    return '<button class="station' + (k === 'grenz' ? ' wide' : '') + '" data-m="' + k + '"><div class="eyebrow">' + m.tag + '</div><h2>' + esc(m.title) + '</h2><p>' + esc(m.blurb) + '</p>' +
       '<div class="sample">' + esc(m.sample) + '</div>' +
       '<div class="meta"><span>' + (k === 'wason' ? '5 Regeln' : '10 Fragen') + '</span><span>Bestwert <b>' + (k in best ? best[k] : '–') + '</b> / ' + max[k] + '</span></div></button>';
   }).join('');
@@ -1018,6 +1457,10 @@ function renderSheet() {
     card('De Morgan', '', 'Zieht man ein NICHT in die Klammer, kippt UND zu ODER und umgekehrt.<br><code>!(a &amp;&amp; b) == !a || !b</code><br><code>!(a || b) == !a &amp;&amp; !b</code>', '„Wer Turnschuhe oder Jogginghose trägt, bleibt draußen“ heißt: rein darf, wer keine Turnschuhe UND keine Jogginghose trägt.', '', true) +
     card('Vorrang und Guards in C#', '', '<code>!</code> bindet am stärksten, dann <code>&amp;&amp;</code>, dann <code>||</code>. Also: <code>a || b &amp;&amp; c</code> = <code>a || (b &amp;&amp; c)</code>.<br>Ein Guard <code>if (X) return;</code> lässt den Rest nur laufen, wenn X falsch ist. Zwei Guards hintereinander: <code>!X &amp;&amp; !Y</code>.', '', '', true) +
     card('Regeln prüfen (Karten umdrehen)', '', 'Eine Regel WENN A DANN B kann nur ein Fall mit A und ohne B verletzen. Prüfe die Fälle mit A und die Fälle ohne B. Fälle mit B oder ohne A sind egal.', '', '', true) +
+    card('Any und All', '', '<code>!list.Any(p)</code> = <code>list.All(!p)</code><br><code>!list.All(p)</code> = <code>list.Any(!p)</code>', 'All auf einer leeren Liste ist true, wie ein Wenn-dann ohne Anlass.', '') +
+    card('bool? hat drei Werte', '', '<code>x != true</code> ist bei null wahr, <code>x == false</code> nicht. <code>!(x ?? false)</code> behandelt null wie false.', 'Typisch bei <code>user?.IsAdmin</code>.', '') +
+    card('Kurzschluss', '', '<code>&amp;&amp;</code> und <code>||</code> hören auf, sobald das Ergebnis feststeht. Darum gehört der Null-Check nach links: <code>list != null &amp;&amp; list.Count &gt; 0</code>. Ein einzelnes <code>&amp;</code> wertet immer beide Seiten aus.', '', '', true) +
+    card('Grenzfälle', '', 'Indizes laufen von 0 bis Length − 1. <code>a..b</code> schließt b aus, <code>^1</code> ist das letzte Element, <code>^0</code> zeigt hinter das Ende.<br>n Abstände haben n + 1 Pfosten. Von a bis b einschließlich sind es b − a + 1.<br>Substring, GetRange und Enumerable.Range erwarten als zweiten Parameter eine Anzahl.', '', '', true) +
     '</div><div class="row" style="margin-top:18px"><button class="submit" id="sheetBack">Zurück zu den Stationen</button></div>';
   $('#sheetBack').onclick = goHome;
   showView('sheet');
