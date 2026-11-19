@@ -1,0 +1,1042 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Wenn &amp; Aber</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one centred column like an instrument panel; every truth value is a signal lamp (green = wahr, red = falsch) */
+:root {
+  --bg: #eceff3;
+  --panel: #ffffff;
+  --panel-2: #f4f6f9;
+  --ink: #18202c;
+  --muted: #586375;
+  --line: #d5dbe4;
+  --accent: #2d43c4;
+  --accent-ink: #ffffff;
+  --accent-soft: #e3e7fb;
+  --true: #0f8156;
+  --true-soft: #e0f3ea;
+  --false: #c03a30;
+  --false-soft: #fae6e4;
+  --op: #9a5300;
+  --op-soft: #fbefdf;
+  --code-bg: #f3f5f9;
+  --display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141a; --panel: #181e27; --panel-2: #1e2530; --ink: #e7ebf1; --muted: #9ba5b5; --line: #2b3442;
+    --accent: #8d9dff; --accent-ink: #0e1220; --accent-soft: #232a4b;
+    --true: #3fcf93; --true-soft: #15302a; --false: #ff7d71; --false-soft: #3a2020;
+    --op: #f1b65c; --op-soft: #33281a; --code-bg: #141a22;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141a; --panel: #181e27; --panel-2: #1e2530; --ink: #e7ebf1; --muted: #9ba5b5; --line: #2b3442;
+  --accent: #8d9dff; --accent-ink: #0e1220; --accent-soft: #232a4b;
+  --true: #3fcf93; --true-soft: #15302a; --false: #ff7d71; --false-soft: #3a2020;
+  --op: #f1b65c; --op-soft: #33281a; --code-bg: #141a22;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+.wrap { max-width: 780px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.1; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, .card3:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+code, kbd, pre { font-family: var(--mono); }
+kbd {
+  font-size: 11px; padding: 1px 6px; border-radius: 4px; border: 1px solid currentColor;
+  opacity: .6; margin-left: 6px; font-weight: 400;
+}
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 20px 8px; flex-wrap: wrap; }
+.brand { background: none; border: 0; padding: 0; font: 800 26px/1 var(--display); letter-spacing: -.01em; }
+.brand .amp { color: var(--op); font-weight: 500; }
+.nav { display: flex; gap: 8px; }
+.ghost {
+  background: transparent; border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 14px; font-size: 14px; color: var(--muted);
+}
+.ghost:hover { color: var(--ink); border-color: var(--muted); }
+
+/* Home */
+.hero { padding-block: 28px 20px; }
+.hero h1 { font-size: clamp(32px, 6vw, 52px); font-weight: 800; letter-spacing: -.02em; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p { color: var(--muted); max-width: 60ch; margin: 14px 0 0; font-size: 17px; }
+.legend { display: flex; gap: 18px; margin-top: 16px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.stations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
+@media (max-width: 620px) { .stations { grid-template-columns: 1fr; } }
+.station {
+  text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 8px; transition: transform .15s, border-color .15s;
+}
+.station:hover { border-color: var(--accent); transform: translateY(-2px); }
+.station .eyebrow { margin: 0; }
+.station h2 { font-size: 22px; }
+.station p { margin: 0; color: var(--muted); font-size: 15px; }
+.station .sample {
+  font: 13px/1.5 var(--mono); background: var(--code-bg); border-radius: 8px; padding: 8px 10px;
+  color: var(--ink); overflow-x: auto; white-space: nowrap;
+}
+.station .meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.station .meta b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
+
+/* Lamps */
+.lamp { display: inline-flex; align-items: center; gap: 7px; font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
+.lamp i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 22%, transparent), 0 0 10px color-mix(in srgb, var(--c) 70%, transparent); flex: none; }
+.on-true { --c: var(--true); color: var(--true); }
+.on-false { --c: var(--false); color: var(--false); }
+
+/* Game chrome */
+.gamebar { display: flex; align-items: center; gap: 14px; padding-block: 14px; flex-wrap: wrap; }
+.gamebar h2 { font-size: 20px; flex: 1 1 auto; }
+.score { font: 600 14px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); display: flex; gap: 14px; }
+.score b { color: var(--ink); }
+.pips { display: flex; gap: 5px; margin-bottom: 16px; }
+.pip { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+.pip.cur { background: var(--accent); }
+.pip.ok { background: var(--true); }
+.pip.bad { background: var(--false); }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+@media (max-width: 520px) { .panel { padding: 16px; } }
+.stage { display: flex; flex-direction: column; gap: 18px; }
+
+/* Door */
+.sign { background: var(--panel-2); border: 1px dashed var(--line); border-radius: 12px; padding: 16px 18px; }
+.sign .rule { font: 700 clamp(19px, 3.2vw, 23px)/1.35 var(--display); margin: 0; text-wrap: pretty; }
+.badge { display: inline-block; font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; background: var(--op-soft); color: var(--op); padding: 4px 7px; border-radius: 4px; margin-left: 8px; vertical-align: 1px; }
+.hintbox { margin-top: 12px; }
+.struct { font-size: 15px; line-height: 2; }
+.atom { background: var(--accent-soft); border-radius: 5px; padding: 2px 6px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.op { color: var(--op); font-weight: 700; }
+.struct .op, .steps .op, .tt .op { font: 700 12px/1 var(--mono); letter-spacing: .04em; background: var(--op-soft); padding: 3px 6px; border-radius: 4px; }
+.paren { color: var(--muted); font-weight: 700; }
+.guest { display: flex; gap: 16px; align-items: center; }
+.avatar { width: 64px; height: 64px; border-radius: 50%; flex: none; display: grid; place-items: center; font: 800 22px/1 var(--display); color: #fff; background: hsl(var(--h) 52% 44%); }
+.gname { font: 700 20px/1.2 var(--display); margin-bottom: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; font-size: 14px; background: var(--panel); }
+
+/* Answers */
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ans {
+  border: 2px solid var(--line); background: var(--panel); border-radius: 12px; padding: 14px 10px;
+  font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 4px; text-align: center;
+}
+.ans:hover:not(:disabled) { border-color: var(--accent); }
+.ans:disabled { cursor: default; opacity: .55; }
+.ans.chosen { opacity: 1; }
+.ans.is-right { border-color: var(--true); background: var(--true-soft); opacity: 1; }
+.ans.is-wrong { border-color: var(--false); background: var(--false-soft); opacity: 1; }
+.q { font: 700 18px/1.35 var(--display); margin: 0; }
+.q code { font-size: 15px; background: var(--code-bg); padding: 2px 6px; border-radius: 5px; font-weight: 600; }
+
+/* Code */
+.codegrid { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 620px) { .codegrid { grid-template-columns: minmax(0, 1fr); } }
+.state { background: var(--panel-2); border-radius: 12px; padding: 14px; }
+.state table { border-collapse: collapse; font: 13px/1.5 var(--mono); width: 100%; }
+.state td { padding: 3px 0; vertical-align: top; word-break: break-all; }
+.state td.eq { color: var(--muted); padding: 3px 6px; }
+.v-true { color: var(--true); font-weight: 600; }
+.v-false { color: var(--false); font-weight: 600; }
+pre.code {
+  margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  font-size: 14px; line-height: 1.65; overflow-x: auto; min-width: 0;
+}
+pre.code .op, code .op { color: var(--op); font-weight: 600; background: none; padding: 0; font-size: inherit; letter-spacing: 0; }
+.kw { color: var(--accent); font-weight: 600; }
+.call { font-weight: 600; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  display: flex; gap: 12px; align-items: center; text-align: left; background: var(--panel);
+  border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt:disabled { cursor: default; opacity: .55; }
+.opt code { font-size: 14px; overflow-x: auto; white-space: nowrap; min-width: 0; }
+.opt .num { font: 700 13px/1 var(--mono); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--panel-2); flex: none; }
+.opt.is-right { border-color: var(--true); background: var(--true-soft); opacity: 1; }
+.opt.is-wrong { border-color: var(--false); background: var(--false-soft); opacity: 1; }
+
+/* Promise */
+.promise blockquote { margin: 0; font: 700 clamp(20px, 3.4vw, 25px)/1.3 var(--display); text-wrap: pretty; }
+.facts { display: flex; flex-direction: column; gap: 8px; }
+.fact { display: flex; gap: 12px; align-items: center; background: var(--panel-2); border-radius: 10px; padding: 11px 14px; font-size: 17px; }
+.fact .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+
+/* Cards */
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 560px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card3 {
+  aspect-ratio: 3 / 4; max-width: 100%; perspective: 800px; background: none; border: 0; padding: 0; position: relative;
+}
+.card3 .inner { position: absolute; inset: 0; transition: transform .5s; transform-style: preserve-3d; }
+.card3.flipped .inner { transform: rotateY(180deg); }
+.face, .back {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 10px;
+  border: 2px solid var(--line); background: var(--panel); font: 700 18px/1.2 var(--display); text-align: center; overflow-wrap: anywhere;
+}
+.card3.mono .face, .card3.mono .back { font: 600 14px/1.3 var(--mono); }
+.back { transform: rotateY(180deg); background: var(--panel-2); border-style: dashed; }
+.face small, .back small { font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); position: absolute; top: 9px; }
+.card3.sel .face { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+.card3.need .back { border-color: var(--true); border-style: solid; }
+.card3.miss .back { border-color: var(--false); border-style: solid; }
+.card3 .mark { position: absolute; bottom: 9px; font: 600 10px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.submit { justify-self: start; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 12px; padding: 12px 22px; font-weight: 700; }
+.submit:disabled { opacity: .5; cursor: default; }
+
+/* Feedback */
+.fb { margin-top: 16px; border-radius: 16px; padding: 20px 22px; border: 1px solid var(--line); background: var(--panel); }
+@media (max-width: 520px) { .fb { padding: 16px; } }
+.fb.ok { background: var(--true-soft); border-color: color-mix(in srgb, var(--true) 35%, transparent); }
+.fb.bad { background: var(--false-soft); border-color: color-mix(in srgb, var(--false) 35%, transparent); }
+.fb-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.fb-head h3 { font-size: 22px; }
+.fb.ok h3 { color: var(--true); }
+.fb.bad h3 { color: var(--false); }
+.fb p { margin: 6px 0; }
+.sub { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 16px 0 8px; }
+.steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.steps li { display: flex; justify-content: space-between; align-items: center; gap: 14px; background: var(--panel); border-radius: 8px; padding: 8px 12px; min-width: 0; }
+.steps li.top { box-shadow: inset 0 0 0 2px var(--line); }
+.steps .expr { min-width: 0; overflow-x: auto; line-height: 1.9; font-size: 15px; }
+.steps .expr.mono { font: 13.5px/1.7 var(--mono); white-space: nowrap; }
+.concl { font-weight: 700; }
+.tip { margin-top: 14px; background: var(--panel); border-radius: 10px; padding: 12px 14px; font-size: 15px; display: flex; flex-direction: column; gap: 6px; }
+.tip b { font-family: var(--display); }
+.note { font-size: 15px; color: var(--muted); }
+.next { background: var(--ink); color: var(--bg); border: 0; border-radius: 10px; padding: 10px 18px; font-weight: 700; }
+.ttwrap { overflow-x: auto; }
+.tt { border-collapse: collapse; font: 13px/1.4 var(--mono); background: var(--panel); border-radius: 8px; overflow: hidden; }
+.tt th, .tt td { padding: 6px 12px; text-align: center; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tt th { font-weight: 600; color: var(--muted); font-size: 12px; }
+.tt tr.hl td { background: var(--accent-soft); font-weight: 700; }
+.tt td.diff { outline: 2px solid var(--false); outline-offset: -3px; }
+.tt tr:last-child td { border-bottom: 0; }
+.w { color: var(--true); font-weight: 600; }
+.f { color: var(--false); font-weight: 600; }
+.cardlist { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.cardlist li { background: var(--panel); border-radius: 8px; padding: 8px 12px; font-size: 15px; }
+.cardlist li b { font-family: var(--mono); font-size: 13px; }
+
+/* End */
+.end { text-align: left; display: flex; flex-direction: column; gap: 14px; }
+.bigscore { font: 800 64px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.bigscore span { font-size: 24px; color: var(--muted); font-weight: 500; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Cheat sheet */
+.sheet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 8px; }
+@media (max-width: 620px) { .sheet { grid-template-columns: 1fr; } }
+.sheet .panel { display: flex; flex-direction: column; gap: 10px; padding: 18px; }
+.sheet h3 { font-size: 19px; }
+.sheet h3 .op { font: 700 13px/1 var(--mono); background: var(--op-soft); padding: 4px 7px; border-radius: 4px; margin-left: 6px; vertical-align: 2px; }
+.sheet p { margin: 0; font-size: 15px; }
+.sheet .ex { color: var(--muted); }
+.sheet .wide { grid-column: 1 / -1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card3 .inner, .station { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <button class="brand" id="homeBtn" aria-label="Zur Übersicht">Wenn <span class="amp">&amp;</span> Aber</button>
+    <nav class="nav">
+      <button class="ghost" id="sheetBtn">Spickzettel</button>
+    </nav>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <h1>Logik trainieren, ohne eine einzige <em>Formel</em> zu pauken.</h1>
+      <p>Vier Stationen aus dem Alltag und aus dem Code. Jede Antwort wird Schritt für Schritt aufgelöst, damit du siehst, wo genau das UND gekippt ist.</p>
+      <div class="legend">
+        <span class="lamp on-true"><i></i>wahr</span>
+        <span class="lamp on-false"><i></i>falsch</span>
+        <span>Tastatur: <kbd>←</kbd><kbd>→</kbd> antworten, <kbd>Enter</kbd> weiter, <kbd>H</kbd> Hinweis</span>
+      </div>
+    </section>
+    <section class="stations" id="stations"></section>
+  </main>
+
+  <main id="game" hidden>
+    <div class="gamebar">
+      <h2 id="gTitle"></h2>
+      <div class="score"><span>Punkte <b id="gScore">0</b></span><span>Serie <b id="gStreak">0</b></span></div>
+    </div>
+    <div class="pips" id="pips"></div>
+    <div class="panel"><div class="stage" id="stage"></div></div>
+    <div class="fb" id="fb" hidden></div>
+  </main>
+
+  <main id="end" hidden></main>
+  <main id="sheet" hidden></main>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+/* ---------- helpers ---------- */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const byTier = (a, b) => a.tier - b.tier;
+
+/* ---------- logic engine ---------- */
+const at = k => ({ t: 'var', k });
+const not = a => ({ t: 'not', a });
+const and = (...a) => ({ t: 'and', a });
+const or = (...a) => ({ t: 'or', a });
+const imp = (a, b) => ({ t: 'imp', a, b });
+const xor = (a, b) => ({ t: 'xor', a, b });
+const iff = (a, b) => ({ t: 'iff', a, b });
+
+function kids(n) {
+  if (n.t === 'var') { return []; }
+  if (n.t === 'not') { return [n.a]; }
+  if (n.t === 'and' || n.t === 'or') { return n.a; }
+  return [n.a, n.b];
+}
+function ev(n, e) {
+  switch (n.t) {
+    case 'var': return !!e[n.k];
+    case 'not': return !ev(n.a, e);
+    case 'and': return n.a.every(c => ev(c, e));
+    case 'or': return n.a.some(c => ev(c, e));
+    case 'imp': return !ev(n.a, e) || ev(n.b, e);
+    case 'xor': return ev(n.a, e) !== ev(n.b, e);
+    case 'iff': return ev(n.a, e) === ev(n.b, e);
+  }
+}
+function varsOf(n, out) {
+  out = out || [];
+  if (n.t === 'var') { if (!out.includes(n.k)) { out.push(n.k); } }
+  else { kids(n).forEach(c => varsOf(c, out)); }
+  return out;
+}
+function steps(n, out) {
+  out = out || [];
+  kids(n).forEach(c => steps(c, out));
+  const s = JSON.stringify(n);
+  if (!out.some(o => JSON.stringify(o) === s)) { out.push(n); }
+  return out;
+}
+function sampleEnv(ast, target) {
+  const ks = varsOf(ast);
+  let e = {};
+  for (let i = 0; i < 400; i++) {
+    e = {};
+    ks.forEach(k => { e[k] = Math.random() < 0.5; });
+    if (ev(ast, e) === target) { return e; }
+  }
+  return e;
+}
+function allEnvs(keys) {
+  const out = [];
+  const n = keys.length;
+  for (let m = 0; m < (1 << n); m++) {
+    const e = {};
+    keys.forEach((k, i) => { e[k] = !((m >> (n - 1 - i)) & 1); });
+    out.push(e);
+  }
+  return out;
+}
+function counterexample(a, b) {
+  const ks = varsOf(b, varsOf(a));
+  return allEnvs(ks).find(e => ev(a, e) !== ev(b, e)) || null;
+}
+
+/* natural-language structure */
+const isCompound = n => n.t !== 'var' && !(n.t === 'not' && n.a.t === 'var');
+function nat(n, V) {
+  const op = s => '<span class="op">' + s + '</span>';
+  const w = c => isCompound(c) ? '<span class="paren">(</span>' + nat(c, V) + '<span class="paren">)</span>' : nat(c, V);
+  switch (n.t) {
+    case 'var': return '<span class="atom">' + esc(V[n.k].pos) + '</span>';
+    case 'not': return n.a.t === 'var' ? '<span class="atom">' + esc(V[n.a.k].neg) + '</span>' : op('NICHT') + ' ' + w(n.a);
+    case 'and': return n.a.map(w).join(' ' + op('UND') + ' ');
+    case 'or': return n.a.map(w).join(' ' + op('ODER') + ' ');
+    case 'imp': return op('WENN') + ' ' + w(n.a) + ' ' + op('DANN') + ' ' + w(n.b);
+    case 'xor': return op('ENTWEDER') + ' ' + w(n.a) + ' ' + op('ODER') + ' ' + w(n.b);
+    case 'iff': return w(n.a) + ' ' + op('GENAU DANN, WENN') + ' ' + w(n.b);
+  }
+}
+
+/* C# rendering */
+const PREC = { var: 9, not: 8, iff: 6, xor: 5, and: 3, or: 2 };
+const isBin = t => t === 'and' || t === 'or' || t === 'xor' || t === 'iff';
+function code(n, V, min) {
+  const op = s => '<span class="op">' + s + '</span>';
+  const atom = k => '<span class="id">' + esc(V[k].code) + '</span>';
+  const w = (c, p) => {
+    const need = isBin(c.t) && (PREC[c.t] < PREC[p.t] || c.t === 'xor' || c.t === 'iff' || (!min && c.t !== p.t));
+    return need ? '(' + code(c, V, min) + ')' : code(c, V, min);
+  };
+  switch (n.t) {
+    case 'var': return atom(n.k);
+    case 'not':
+      if (n.a.t === 'var' && !V[n.a.k].complex) { return op('!') + atom(n.a.k); }
+      if (n.a.t === 'not') { return op('!') + code(n.a, V, min); }
+      return op('!') + '(' + code(n.a, V, min) + ')';
+    case 'and': return n.a.map(c => w(c, n)).join(' ' + op('&amp;&amp;') + ' ');
+    case 'or': return n.a.map(c => w(c, n)).join(' ' + op('||') + ' ');
+    case 'xor': return w(n.a, n) + ' ' + op('^') + ' ' + w(n.b, n);
+    case 'iff': return w(n.a, n) + ' ' + op('==') + ' ' + w(n.b, n);
+    case 'imp': return code(or(not(n.a), n.b), V, min);
+  }
+}
+
+const lamp = v => '<span class="lamp ' + (v ? 'on-true' : 'on-false') + '"><i></i>' + (v ? 'wahr' : 'falsch') + '</span>';
+function stepList(ast, render, env, mono) {
+  const list = steps(ast);
+  return '<ol class="steps">' + list.map((n, i) =>
+    '<li' + (i === list.length - 1 ? ' class="top"' : '') + '><span class="expr' + (mono ? ' mono' : '') + '">' + render(n) + '</span>' + lamp(ev(n, env)) + '</li>'
+  ).join('') + '</ol>';
+}
+function truthTable(keys, label, cols, opts) {
+  opts = opts || {};
+  const fmt = opts.fmt || (v => v ? '<span class="w">W</span>' : '<span class="f">F</span>');
+  const hl = opts.highlight;
+  let h = '<div class="ttwrap"><table class="tt"><thead><tr>' + keys.map(k => '<th>' + label(k) + '</th>').join('') + cols.map(c => '<th>' + c.label + '</th>').join('') + '</tr></thead><tbody>';
+  allEnvs(keys).forEach(e => {
+    const isHl = hl && keys.every(k => !!hl[k] === e[k]);
+    const ref = ev(cols[0].ast, e);
+    h += '<tr' + (isHl ? ' class="hl"' : '') + '>' + keys.map(k => '<td>' + (e[k] ? '<span class="w">W</span>' : '<span class="f">F</span>') + '</td>').join('');
+    cols.forEach((c, i) => {
+      const v = ev(c.ast, e);
+      const diff = opts.diff && i > 0 && v !== ref;
+      h += '<td' + (diff ? ' class="diff"' : '') + '>' + fmt(v) + '</td>';
+    });
+    h += '</tr>';
+  });
+  return h + '</tbody></table></div>';
+}
+
+/* ---------- concept tips ---------- */
+const TAGS = {
+  UND: ['UND', 'UND ist streng: Alle Teile müssen wahr sein. Ein einziges Falsch macht das Ganze falsch.'],
+  ODER: ['ODER', 'ODER ist großzügig: Ein wahrer Teil reicht. Es dürfen auch beide wahr sein. Das ist das „oder“ der Logik, nicht das „entweder oder“ aus dem Alltag.'],
+  NICHT: ['NICHT', 'NICHT dreht den Wert um. Werte zuerst aus, was in der Klammer steht, und kehre erst dann um.'],
+  DEMORGAN: ['De Morgan', 'Eine Verneinung über einer Klammer dreht auch den Verknüpfer um: NICHT (A ODER B) = NICHT A UND NICHT B. NICHT (A UND B) = NICHT A ODER NICHT B.'],
+  WENNDANN: ['WENN–DANN', 'WENN A DANN B ist nur in einem einzigen Fall verletzt: A gilt und B nicht. Gilt A nicht, ist die Aussage automatisch erfüllt.'],
+  XOR: ['ENTWEDER–ODER', 'Genau einer der beiden Teile muss wahr sein. Beide wahr oder beide falsch ergibt falsch.'],
+  NURWENN: ['NUR WENN', '„A nur, wenn B“ heißt: WENN A DANN B. Die Richtung dreht sich gegenüber dem Satzbau. B allein garantiert A nicht.'],
+  IFF: ['GENAU DANN, WENN', 'Beide Seiten müssen denselben Wert haben, also beide wahr oder beide falsch.'],
+  ESSEIDENN: ['ES SEI DENN', '„A, es sei denn B“ heißt logisch: WENN NICHT B, DANN A. Tritt B ein, verspricht der Satz gar nichts.'],
+  KONTRA: ['OHNE … KEIN', '„Ohne B kein A“ heißt: WENN A DANN B. Gleichwertig ist: WENN NICHT B, DANN NICHT A.'],
+  VORRANG: ['Vorrang in C#', '&& bindet stärker als ||. Der Ausdruck a || b && c bedeutet a || (b && c). Im Zweifel Klammern setzen.'],
+  GUARD: ['Guard Clause', 'Ein Guard (if … return;) beschreibt, wann abgebrochen wird. Der Code danach läuft nur, wenn die Guard-Bedingung falsch ist.'],
+  WASON: ['Regeln prüfen', 'Verletzen kann eine Regel WENN A DANN B nur ein Fall mit A und ohne B. Umdrehen musst du also die Karte mit A und die Karte ohne B. Die Karte mit B ist egal.']
+};
+function tipHtml(tags) {
+  const uniq = [...new Set(tags)];
+  return '<div class="tip">' + uniq.map(t => '<div><b>' + esc(TAGS[t][0]) + ':</b> ' + esc(TAGS[t][1]) + '</div>').join('') + '</div>';
+}
+
+/* ============================================================
+   Station 1: Türsteher
+   ============================================================ */
+const V_DOOR = {
+  adult: { pos: 'ist volljährig', neg: 'ist minderjährig', chip: b => b ? rnd(18, 49) + ' Jahre' : rnd(15, 17) + ' Jahre' },
+  ticket: { pos: 'hat ein Ticket', neg: 'hat kein Ticket', chip: b => b ? 'Ticket' : 'kein Ticket' },
+  list: { pos: 'steht auf der Gästeliste', neg: 'steht nicht auf der Gästeliste', chip: b => b ? 'auf der Gästeliste' : 'nicht auf der Liste' },
+  sneakers: { pos: 'trägt Turnschuhe', neg: 'trägt keine Turnschuhe', chip: b => b ? 'Turnschuhe' : 'Lederschuhe' },
+  jogging: { pos: 'trägt Jogginghose', neg: 'trägt keine Jogginghose', chip: b => b ? 'Jogginghose' : 'Jeans' },
+  escort: { pos: 'kommt mit Begleitung', neg: 'kommt allein', chip: b => b ? 'mit Begleitung' : 'allein' },
+  vip: { pos: 'hat ein VIP-Band', neg: 'hat kein VIP-Band', chip: b => b ? 'VIP-Band' : 'kein VIP-Band' },
+  member: { pos: 'ist Clubmitglied', neg: 'ist kein Clubmitglied', chip: b => b ? 'Mitgliedskarte' : 'keine Mitgliedskarte' },
+  birthday: { pos: 'hat heute Geburtstag', neg: 'hat heute nicht Geburtstag', chip: b => b ? 'hat heute Geburtstag' : 'kein Geburtstag' }
+};
+const DOOR_RULES = [
+  { tier: 1, tags: ['UND'], text: 'Rein darf, wer volljährig ist und ein Ticket hat.', ast: and(at('adult'), at('ticket')) },
+  { tier: 1, tags: ['ODER'], text: 'Rein darf, wer ein Ticket hat oder auf der Gästeliste steht.', ast: or(at('ticket'), at('list')) },
+  { tier: 1, tags: ['UND', 'NICHT'], text: 'Rein darf, wer ein Ticket hat und keine Turnschuhe trägt.', ast: and(at('ticket'), not(at('sneakers'))) },
+  { tier: 2, tags: ['UND', 'ODER'], text: 'Rein darf, wer volljährig ist und dazu ein Ticket hat oder auf der Gästeliste steht.', ast: and(at('adult'), or(at('ticket'), at('list'))) },
+  { tier: 2, tags: ['ODER', 'UND'], text: 'Rein darf, wer auf der Gästeliste steht. Oder wer volljährig ist und ein Ticket hat.', ast: or(at('list'), and(at('adult'), at('ticket'))) },
+  { tier: 2, tags: ['ODER'], text: 'Clubmitglieder kommen immer rein. Alle anderen nur mit Ticket.', ast: or(at('member'), at('ticket')) },
+  { tier: 3, tags: ['NICHT', 'DEMORGAN'], text: 'Wer Turnschuhe oder Jogginghose trägt, bleibt draußen. Alle anderen dürfen rein.', ast: not(or(at('sneakers'), at('jogging'))) },
+  { tier: 3, tags: ['NICHT', 'DEMORGAN'], text: 'Wer minderjährig ist und allein kommt, bleibt draußen. Alle anderen dürfen rein.', ast: not(and(not(at('adult')), not(at('escort')))) },
+  { tier: 3, tags: ['NICHT', 'DEMORGAN'], text: 'Draußen bleibt, wer kein Ticket hat und nicht auf der Gästeliste steht.', ast: not(and(not(at('ticket')), not(at('list')))) },
+  { tier: 4, tags: ['WENNDANN'], text: 'Wer Turnschuhe trägt, muss auf der Gästeliste stehen. Sonst gibt es heute keine Regeln.', ast: imp(at('sneakers'), at('list')) },
+  { tier: 4, tags: ['WENNDANN'], text: 'Wer allein kommt, braucht ein Ticket. Paare kommen umsonst rein.', ast: imp(not(at('escort')), at('ticket')) },
+  { tier: 4, tags: ['XOR'], text: 'Entweder VIP-Band oder Begleitung. Das Band gilt nur für eine Person, also nicht beides. Ohne beides geht es auch nicht.', ast: xor(at('vip'), at('escort')) },
+  { tier: 5, tags: ['UND', 'WENNDANN'], text: 'Rein darf, wer volljährig ist. Wer Turnschuhe trägt, muss außerdem auf der Gästeliste stehen.', ast: and(at('adult'), imp(at('sneakers'), at('list'))) },
+  { tier: 5, tags: ['UND', 'NICHT'], text: 'Mit Ticket kommt jeder rein, es sei denn, er trägt Jogginghose und ist kein Mitglied.', ast: and(at('ticket'), not(and(at('jogging'), not(at('member'))))) },
+  { tier: 5, tags: ['UND', 'WENNDANN'], text: 'Rein darf nur, wer volljährig ist. Ein Ticket braucht man nicht, wenn man Geburtstag hat.', ast: and(at('adult'), imp(not(at('birthday')), at('ticket'))) }
+];
+const NAMES = ['Mia', 'Jonas', 'Lea', 'Elias', 'Emma', 'Noah', 'Hannah', 'Paul', 'Lina', 'Ben', 'Clara', 'Finn', 'Ida', 'Luis', 'Ella', 'Theo', 'Frieda', 'Karl', 'Nora', 'Emil', 'Greta', 'Anton', 'Mila', 'Oskar'];
+
+const DOOR = {
+  title: 'Türsteher im Club Tautologie',
+  tag: 'Station 1',
+  blurb: 'An der Tür hängt jede Nacht eine neue Regel. Lies sie und entscheide, wer reindarf.',
+  sample: 'volljährig UND (Ticket ODER Gästeliste)',
+  build() {
+    const names = shuffle(NAMES);
+    const items = [];
+    [1, 2, 3, 4, 5].forEach(t => {
+      const r = pick(DOOR_RULES.filter(x => x.tier === t));
+      for (let j = 0; j < 2; j++) {
+        const env = sampleEnv(r.ast, Math.random() < 0.5);
+        const used = varsOf(r.ast);
+        const extra = pick(Object.keys(V_DOOR).filter(k => !used.includes(k)));
+        env[extra] = Math.random() < 0.5;
+        const keys = shuffle(used.concat([extra]));
+        const chips = keys.map(k => V_DOOR[k].chip(env[k]));
+        items.push({ rule: r, env, chips, name: names[items.length], hue: rnd(0, 359), fresh: j === 0 });
+      }
+    });
+    return items;
+  },
+  render(it, el) {
+    el.innerHTML =
+      '<div class="sign"><div class="eyebrow">Heute an der Tür' + (it.fresh && S.i > 0 ? '<span class="badge">Neue Regel</span>' : '') + '</div>' +
+      '<p class="rule">' + esc(it.rule.text) + '</p>' + hintBox(nat(it.rule.ast, V_DOOR)) + '</div>' +
+      '<div class="guest"><div class="avatar" style="--h:' + it.hue + '">' + esc(it.name[0]) + '</div>' +
+      '<div><div class="gname">' + esc(it.name) + '</div><div class="chips">' + it.chips.map(c => '<span class="chip">' + esc(c) + '</span>').join('') + '</div></div></div>' +
+      '<div class="answers"><button class="ans" data-a="0">Draußen bleiben <kbd>←</kbd></button><button class="ans" data-a="1">Reinlassen <kbd>→</kbd></button></div>';
+    wireHint(it);
+    wireBinary(val => {
+      const truth = ev(it.rule.ast, it.env);
+      markBinary(val, truth);
+      revealHint();
+      const html = '<p>' + esc(it.name) + (truth ? ' darf rein.' : ' bleibt draußen.') + '</p>' +
+        '<div class="sub">Auswertung, von innen nach außen</div>' + stepList(it.rule.ast, n => nat(n, V_DOOR), it.env) +
+        '<p class="concl">Ergebnis: ' + (truth ? 'Reinlassen' : 'Draußen bleiben') + '</p>';
+      resolve(val === truth, html, it.rule.tags);
+    });
+  }
+};
+
+/* ============================================================
+   Station 2: Code-Review
+   ============================================================ */
+const boolVar = name => ({ code: name, state: b => [[name, b ? 'true' : 'false']] });
+const V_CODE = {
+  login: boolVar('user.IsLoggedIn'),
+  admin: boolVar('user.IsAdmin'),
+  banned: boolVar('user.IsBanned'),
+  owner: { code: 'post.AuthorId == user.Id', complex: true, state: b => [['post.AuthorId', '42'], ['user.Id', b ? '42' : '17']] },
+  locked: boolVar('post.IsLocked'),
+  items: { code: 'cart.Items.Count > 0', complex: true, state: b => [['cart.Items.Count', b ? String(rnd(1, 5)) : '0']] },
+  paid: boolVar('order.IsPaid'),
+  cancelled: boolVar('order.IsCancelled'),
+  weekend: boolVar('today.IsWeekend'),
+  holiday: boolVar('today.IsHoliday'),
+  open: boolVar('store.IsOpen'),
+  debug: boolVar('config.DebugMode'),
+  prod: boolVar('env.IsProduction'),
+  flag: boolVar('flags.NewCheckout'),
+  beta: boolVar('user.IsBetaTester')
+};
+const C = (n, min) => code(n, V_CODE, !!min);
+const kw = s => '<span class="kw">' + s + '</span>';
+const call = s => '<span class="call">' + esc(s) + '</span>';
+
+const SNIPPETS = [
+  { tier: 1, tags: ['UND'], kind: 'if', cond: and(at('login'), at('items')), body: 'ShowCheckoutButton();' },
+  { tier: 1, tags: ['ODER'], kind: 'if', cond: or(at('admin'), at('owner')), body: 'ShowEditButton();' },
+  { tier: 1, tags: ['NICHT', 'UND'], kind: 'if', cond: and(not(at('banned')), at('login')), body: 'EnableComments();' },
+  { tier: 2, tags: ['UND', 'ODER', 'NICHT'], kind: 'if', cond: and(not(at('banned')), or(at('admin'), at('owner'))), body: 'DeletePost(post);' },
+  { tier: 2, tags: ['GUARD', 'ODER'], kind: 'guard', guards: [or(not(at('paid')), at('cancelled'))], body: 'Ship(order);' },
+  { tier: 2, tags: ['UND', 'ODER', 'NICHT'], kind: 'if', cond: and(at('flag'), or(at('beta'), not(at('prod')))), body: 'UseNewCheckout();' },
+  { tier: 3, tags: ['VORRANG'], kind: 'if', min: true, cond: or(at('weekend'), and(at('holiday'), at('open'))), body: 'ShowOpeningBanner();' },
+  { tier: 3, tags: ['NICHT', 'DEMORGAN'], kind: 'if', cond: not(and(at('prod'), not(at('debug')))), body: 'LogVerbose();' },
+  { tier: 4, tags: ['GUARD', 'NICHT'], kind: 'guard', guards: [not(at('login')), and(at('banned'), not(at('admin')))], body: 'PostComment();' },
+  { tier: 4, tags: ['GUARD', 'VORRANG'], kind: 'guard', min: true, guards: [or(not(at('login')), and(at('banned'), not(at('admin'))))], body: 'PostComment();' },
+  { tier: 4, tags: ['NICHT', 'DEMORGAN'], kind: 'if', cond: not(or(at('locked'), and(not(at('admin')), not(at('owner'))))), body: 'ShowEditButton();' }
+];
+const effective = s => s.kind === 'if' ? s.cond : and.apply(null, s.guards.map(g => not(g)));
+function snippetHtml(s) {
+  if (s.kind === 'if') {
+    return kw('if') + ' (' + C(s.cond, s.min) + ')\n{\n    ' + call(s.body) + '\n}';
+  }
+  return s.guards.map(g => kw('if') + ' (' + C(g, s.min) + ') ' + kw('return') + ';').join('\n') + '\n' + call(s.body);
+}
+function stateHtml(keys, env) {
+  const rows = [];
+  const seen = new Set();
+  keys.forEach(k => V_CODE[k].state(env[k]).forEach(([n, v]) => {
+    if (seen.has(n)) { return; }
+    seen.add(n);
+    const cls = v === 'true' ? 'v-true' : v === 'false' ? 'v-false' : '';
+    rows.push('<tr><td>' + esc(n) + '</td><td class="eq">=</td><td class="' + cls + '">' + esc(v) + '</td></tr>');
+  }));
+  return '<table>' + rows.join('') + '</table>';
+}
+
+const EQUIV = [
+  { tier: 1, tags: ['DEMORGAN', 'NICHT'], orig: not(and(at('login'), at('admin'))),
+    opts: [and(not(at('login')), not(at('admin'))), or(not(at('login')), not(at('admin'))), not(or(at('login'), at('admin')))] },
+  { tier: 1, tags: ['DEMORGAN', 'NICHT'], orig: not(or(at('weekend'), at('holiday'))),
+    opts: [or(not(at('weekend')), not(at('holiday'))), and(not(at('weekend')), not(at('holiday'))), and(at('weekend'), not(at('holiday')))] },
+  { tier: 2, tags: ['UND'], orig: and(at('login'), not(at('banned'))), q: 'Welche einzelne Bedingung ersetzt die beiden verschachtelten ifs?',
+    display: () => kw('if') + ' (' + C(at('login')) + ')\n{\n    ' + kw('if') + ' (' + C(not(at('banned'))) + ')\n    {\n        ' + call('PostComment();') + '\n    }\n}',
+    opts: [and(at('login'), not(at('banned'))), or(at('login'), not(at('banned'))), not(and(at('login'), at('banned')))] },
+  { tier: 2, tags: ['ODER'], orig: or(at('admin'), at('owner')), q: 'Welcher Ausdruck liefert für canEdit immer denselben Wert?',
+    display: () => kw('bool') + ' canEdit = ' + C(at('admin')) + ' ? ' + kw('true') + ' : ' + C(at('owner')) + ';',
+    opts: [or(at('admin'), at('owner')), and(at('admin'), at('owner')), or(not(at('admin')), at('owner'))] },
+  { tier: 2, tags: ['UND', 'ODER', 'VORRANG'], min: true, orig: and(at('login'), or(at('admin'), at('owner'))),
+    opts: [or(and(at('login'), at('admin')), and(at('login'), at('owner'))), or(and(at('login'), at('admin')), at('owner')), and(or(at('login'), at('admin')), at('owner'))] },
+  { tier: 3, tags: ['GUARD'], orig: and(at('paid'), not(at('cancelled'))), q: 'Unter welcher Bedingung wird Ship(order) erreicht?',
+    display: () => kw('if') + ' (' + C(not(at('paid'))) + ') ' + kw('return') + ';\n' + kw('if') + ' (' + C(at('cancelled')) + ') ' + kw('return') + ';\n' + call('Ship(order);'),
+    opts: [and(at('paid'), not(at('cancelled'))), or(at('paid'), not(at('cancelled'))), and(not(at('paid')), at('cancelled'))] },
+  { tier: 3, tags: ['DEMORGAN', 'NICHT'], orig: not(or(not(at('prod')), at('debug'))),
+    opts: [and(at('prod'), not(at('debug'))), or(at('prod'), not(at('debug'))), and(not(at('prod')), at('debug'))] },
+  { tier: 4, tags: ['XOR'], orig: xor(at('admin'), at('beta')),
+    display: () => C(at('admin')) + ' <span class="op">!=</span> ' + C(at('beta')),
+    opts: [xor(at('admin'), at('beta')), not(and(at('admin'), at('beta'))), or(at('admin'), at('beta'))] },
+  { tier: 4, tags: ['WENNDANN', 'DEMORGAN'], orig: or(not(at('banned')), at('admin')),
+    opts: [not(and(at('banned'), not(at('admin')))), not(or(at('banned'), at('admin'))), and(not(at('banned')), at('admin'))] }
+];
+
+const CODE = {
+  title: 'Code-Review',
+  tag: 'Station 2',
+  blurb: 'Läuft der Block oder nicht? Und welche Umformung ist wirklich gleichwertig? Alles in C#.',
+  sample: 'if (!user.IsBanned && (user.IsAdmin || isOwner))',
+  build() {
+    const runs = shuffle(SNIPPETS).slice(0, 6).sort(byTier).map(s => ({ type: 'run', s, env: sampleEnv(effective(s), Math.random() < 0.5) }));
+    const eqs = shuffle(EQUIV).slice(0, 4).sort(byTier).map(p => ({ type: 'eq', p, opts: shuffle(p.opts) }));
+    return [runs[0], runs[1], eqs[0], runs[2], eqs[1], runs[3], eqs[2], runs[4], eqs[3], runs[5]];
+  },
+  render(it, el) { return it.type === 'run' ? renderRun(it, el) : renderEq(it, el); }
+};
+
+function renderRun(it, el) {
+  const s = it.s;
+  const eff = effective(s);
+  const fn = s.body.replace(/;$/, '');
+  el.innerHTML =
+    '<div class="codegrid"><div class="state"><div class="eyebrow">Zustand zur Laufzeit</div>' + stateHtml(varsOf(eff), it.env) + '</div>' +
+    '<pre class="code">' + snippetHtml(s) + '</pre></div>' +
+    '<p class="q">Wird <code>' + esc(fn) + '</code> ausgeführt?</p>' +
+    '<div class="answers"><button class="ans" data-a="0">Nein <kbd>←</kbd></button><button class="ans" data-a="1">Ja <kbd>→</kbd></button></div>';
+  wireBinary(val => {
+    const truth = ev(eff, it.env);
+    markBinary(val, truth);
+    let html = '';
+    if (s.kind === 'if') {
+      if (s.min) { html += '<p class="note">So liest der Compiler die Bedingung: <code>' + C(s.cond, false) + '</code></p>'; }
+      html += '<div class="sub">Auswertung der Bedingung</div>' + stepList(s.cond, n => C(n, false), it.env, true);
+    } else {
+      for (let i = 0; i < s.guards.length; i++) {
+        const g = s.guards[i];
+        const hit = ev(g, it.env);
+        if (s.min) { html += '<p class="note">So liest der Compiler den Guard: <code>' + C(g, false) + '</code></p>'; }
+        html += '<div class="sub">Guard' + (s.guards.length > 1 ? ' ' + (i + 1) : '') + ': ' + (hit ? 'greift, also return' : 'greift nicht') + '</div>' + stepList(g, n => C(n, false), it.env, true);
+        if (hit) { break; }
+      }
+    }
+    html += '<p class="concl">Ergebnis: <code>' + esc(fn) + '</code> ' + (truth ? 'wird ausgeführt.' : 'wird übersprungen.') + '</p>';
+    resolve(val === truth, html, s.tags);
+  });
+}
+
+function renderEq(it, el) {
+  const p = it.p;
+  el.innerHTML =
+    '<pre class="code">' + (p.display ? p.display() : C(p.orig, p.min)) + '</pre>' +
+    '<p class="q">' + esc(p.q || 'Welche Bedingung verhält sich in jedem Fall genau gleich?') + '</p>' +
+    '<div class="opts">' + it.opts.map((o, i) => '<button class="opt" data-i="' + i + '"><span class="num">' + (i + 1) + '</span><code>' + C(o, p.min) + '</code></button>').join('') + '</div>';
+  const choose = i => {
+    if (S.answered) { return; }
+    const chosen = it.opts[i];
+    const correctIdx = it.opts.findIndex(o => !counterexample(p.orig, o));
+    const ok = i === correctIdx;
+    $$('.opt', el).forEach((b, j) => {
+      b.disabled = true;
+      if (j === correctIdx) { b.classList.add('is-right'); }
+      else if (j === i) { b.classList.add('is-wrong'); }
+    });
+    const keys = varsOf(chosen, varsOf(p.orig));
+    let html = '';
+    if (!ok) {
+      const ce = counterexample(p.orig, chosen);
+      html += '<p>Gegenbeispiel, bei dem sich deine Wahl anders verhält:</p><div class="state">' + stateHtml(keys, ce) + '</div>' +
+        '<p>Original: ' + lamp(ev(p.orig, ce)) + ' &nbsp; Deine Wahl: ' + lamp(ev(chosen, ce)) + '</p>';
+    } else {
+      html += '<p>In allen ' + (1 << keys.length) + ' Kombinationen liefern beide denselben Wert.</p>';
+    }
+    const cols = [{ label: 'Original', ast: p.orig }].concat(it.opts.map((o, j) => ({ label: 'Option ' + (j + 1), ast: o })));
+    html += '<div class="sub">Wahrheitstafel (rot umrandet: weicht vom Original ab)</div>' +
+      truthTable(keys, k => esc(V_CODE[k].code), cols, { diff: true });
+    resolve(ok, html, p.tags);
+  };
+  $$('.opt', el).forEach(b => { b.onclick = () => choose(+b.dataset.i); });
+  it.opts.forEach((_, i) => { S.keys[String(i + 1)] = () => choose(i); });
+}
+
+/* ============================================================
+   Station 3: Versprechen
+   ============================================================ */
+const V_PROM = {
+  rain: { short: 'es regnet', negShort: 'es regnet nicht', pos: 'Es regnet in Strömen.', neg: 'Die Sonne scheint.' },
+  umbrella: { short: 'Schirm dabei', pos: 'Du hast den Schirm dabei.', neg: 'Der Schirm steht zu Hause.' },
+  tidy: { short: 'Zimmer aufgeräumt', pos: 'Das Zimmer ist blitzblank.', neg: 'Im Zimmer herrscht Chaos.' },
+  ice: { short: 'Eis bekommen', pos: 'Es gibt ein Eis.', neg: 'Es gibt kein Eis.' },
+  green: { short: 'Build grün', pos: 'Der Build ist grün.', neg: 'Der Build ist rot.' },
+  deployed: { short: 'deployed', pos: 'Die neue Version ist live.', neg: 'Es wurde nichts deployed.' },
+  over50: { short: 'ab 50 € bestellt', pos: 'Bestellwert: 72,40 €.', neg: 'Bestellwert: 38,90 €.' },
+  freeship: { short: 'Versand gratis', pos: 'Versandkosten: 0,00 €.', neg: 'Versandkosten: 4,95 €.' },
+  testfail: { short: 'Test schlägt fehl', pos: 'Ein Test schlägt fehl.', neg: 'Alle Tests laufen durch.' },
+  mail: { short: 'Mail verschickt', pos: 'Das Team bekommt eine Mail.', neg: 'Es kommt keine Mail.' },
+  light: { short: 'Licht an', pos: 'Das Licht ist an.', neg: 'Das Licht ist aus.' },
+  person: { short: 'jemand im Raum', pos: 'Jemand ist im Raum.', neg: 'Der Raum ist leer.' },
+  party: { short: 'auf der Party', pos: 'Du stehst am Grill.', neg: 'Du bleibst zu Hause.' },
+  cache: { short: 'Cache leer', pos: 'Der Cache ist leer.', neg: 'Der Cache hat die Daten.' },
+  db: { short: 'DB abgefragt', pos: 'Die Datenbank wird abgefragt.', neg: 'Die Datenbank bleibt still.' },
+  train: { short: 'im Zug', pos: 'Du sitzt im Zug.', neg: 'Du stehst am Bahnsteig.' },
+  ticket: { short: 'Ticket', pos: 'Du hast ein Ticket.', neg: 'Du hast kein Ticket.' },
+  late: { short: 'zu spät', pos: 'Du kommst 20 Minuten zu spät.', neg: 'Du bist pünktlich.' },
+  round: { short: 'Runde ausgegeben', pos: 'Du gibst eine Runde aus.', neg: 'Du gibst keine Runde aus.' }
+};
+const V_PROM_NAT = Object.fromEntries(Object.entries(V_PROM).map(([k, x]) => [k, { pos: x.short, neg: x.negShort || 'nicht ' + x.short }]));
+const PROMISES = [
+  { tier: 1, tags: ['WENNDANN'], who: 'Dein Versprechen', text: 'Wenn es regnet, nehme ich den Schirm mit.', ast: imp(at('rain'), at('umbrella')) },
+  { tier: 1, tags: ['WENNDANN'], who: 'Versprechen deiner Eltern', text: 'Wenn du dein Zimmer aufräumst, bekommst du ein Eis.', ast: imp(at('tidy'), at('ice')) },
+  { tier: 1, tags: ['WENNDANN'], who: 'Regel im Freundeskreis', text: 'Wer zu spät kommt, gibt eine Runde aus.', ast: imp(at('late'), at('round')) },
+  { tier: 2, tags: ['WENNDANN'], who: 'Pipeline-Konfiguration', text: 'Wenn der Build grün ist, wird automatisch deployed.', ast: imp(at('green'), at('deployed')) },
+  { tier: 2, tags: ['WENNDANN'], who: 'Versprechen des Online-Shops', text: 'Ab 50 € Bestellwert ist der Versand gratis.', ast: imp(at('over50'), at('freeship')) },
+  { tier: 2, tags: ['WENNDANN'], who: 'Kommentar im Code', text: 'Wenn der Cache leer ist, wird die Datenbank abgefragt.', ast: imp(at('cache'), at('db')) },
+  { tier: 2, tags: ['WENNDANN'], who: 'Monitoring', text: 'Schlägt ein Test fehl, bekommt das Team eine Mail.', ast: imp(at('testfail'), at('mail')) },
+  { tier: 3, tags: ['NURWENN'], who: 'Versprechen deiner Eltern', text: 'Du bekommst nur dann ein Eis, wenn du dein Zimmer aufgeräumt hast.', ast: imp(at('ice'), at('tidy')) },
+  { tier: 3, tags: ['NURWENN'], who: 'Pipeline-Konfiguration', text: 'Deployed wird nur, wenn der Build grün ist.', ast: imp(at('deployed'), at('green')) },
+  { tier: 3, tags: ['KONTRA'], who: 'Regel der Bahn', text: 'Ohne Ticket kommst du nicht in den Zug.', ast: imp(at('train'), at('ticket')) },
+  { tier: 4, tags: ['IFF'], who: 'Bewegungsmelder', text: 'Das Licht ist genau dann an, wenn jemand im Raum ist.', ast: iff(at('light'), at('person')) },
+  { tier: 4, tags: ['ESSEIDENN'], who: 'Dein Versprechen', text: 'Ich komme zur Grillparty, es sei denn, es regnet.', ast: imp(not(at('rain')), at('party')),
+    note: 'Im Alltag meinen viele damit auch „Wenn es regnet, komme ich nicht.“ Streng genommen verspricht der Satz das aber nicht. Wer trotz Regen kommt, bricht nichts.' }
+];
+
+const PROMISE = {
+  title: 'Versprechen & Regeln',
+  tag: 'Station 3',
+  blurb: 'Wann ist ein Wenn-dann gebrochen? Klingt einfach, ist aber die häufigste Denkfalle der Logik.',
+  sample: 'WENN Regen DANN Schirm',
+  build() {
+    return shuffle(PROMISES).slice(0, 10).sort(byTier).map(p => ({ p, env: sampleEnv(p.ast, Math.random() < 0.5) }));
+  },
+  render(it, el) {
+    const p = it.p;
+    el.innerHTML =
+      '<div class="promise sign"><div class="eyebrow">' + esc(p.who) + '</div><blockquote>„' + esc(p.text) + '“</blockquote>' +
+      hintBox(nat(p.ast, V_PROM_NAT)) + '</div>' +
+      '<div><div class="eyebrow">Was passiert ist</div><div class="facts">' +
+      varsOf(p.ast).map(k => '<div class="fact"><span class="dot"></span>' + esc(it.env[k] ? V_PROM[k].pos : V_PROM[k].neg) + '</div>').join('') + '</div></div>' +
+      '<p class="q">Wurde die Aussage gebrochen?</p>' +
+      '<div class="answers"><button class="ans" data-a="0">Nicht gebrochen <kbd>←</kbd></button><button class="ans" data-a="1">Gebrochen <kbd>→</kbd></button></div>';
+    wireHint(it);
+    wireBinary(val => {
+      const broken = !ev(p.ast, it.env);
+      markBinary(val, broken);
+      revealHint();
+      const keys = varsOf(p.ast);
+      let html = '<p>Die Aussage ist hier ' + (broken ? '<b>gebrochen</b>.' : '<b>nicht gebrochen</b>.') + '</p>' +
+        '<div class="sub">Logisch bedeutet der Satz</div><div class="struct">' + nat(p.ast, V_PROM_NAT) + '</div>' +
+        '<div class="sub">Alle vier Fälle (markiert: dieser Fall)</div>' +
+        truthTable(keys, k => esc(V_PROM_NAT[k].pos), [{ label: 'Aussage', ast: p.ast }], {
+          highlight: it.env, fmt: v => v ? '<span class="w">eingehalten</span>' : '<span class="f">gebrochen</span>'
+        });
+      if (p.note) { html += '<p class="note">' + esc(p.note) + '</p>'; }
+      resolve(val === broken, html, p.tags);
+    });
+  }
+};
+
+/* ============================================================
+   Station 4: Karten umdrehen (Wason)
+   ============================================================ */
+const WASON = [
+  { rule: 'Wer Bier trinkt, muss mindestens 18 Jahre alt sein.', hint: 'Jede Karte ist ein Gast. Eine Seite zeigt sein Getränk, die andere sein Alter.',
+    P: { yes: 'Bier', no: 'Cola' }, Q: { yes: '25 Jahre', no: '16 Jahre' }, Palt: { yes: 'Bier', no: 'Apfelschorle' }, Qalt: { yes: '31 Jahre', no: '15 Jahre' },
+    pDesc: 'Bier', nqDesc: 'ein Alter unter 18', pSide: 'Getränk', qSide: 'Alter' },
+  { rule: 'Wenn auf einer Seite ein Vokal steht, steht auf der anderen Seite eine gerade Zahl.', hint: 'Jede Karte hat auf einer Seite einen Buchstaben und auf der anderen eine Zahl.',
+    P: { yes: 'E', no: 'K' }, Q: { yes: '4', no: '7' }, Palt: { yes: 'A', no: 'M' }, Qalt: { yes: '8', no: '3' },
+    pDesc: 'ein Vokal', nqDesc: 'eine ungerade Zahl', pSide: 'Buchstabe', qSide: 'Zahl', big: true },
+  { rule: 'Jeder Endpunkt, der Daten ändert, verlangt einen Login.', hint: 'Jede Karte ist ein API-Endpunkt. Eine Seite zeigt die Route, die andere, ob ein Login verlangt wird.',
+    P: { yes: 'POST /orders', no: 'GET /health' }, Q: { yes: 'Login: ja', no: 'Login: nein' }, Palt: { yes: 'DELETE /users/7', no: 'GET /products' }, Qalt: { yes: 'Login: ja', no: 'Login: nein' },
+    pDesc: 'ein Endpunkt, der Daten ändert', nqDesc: '„Login: nein“', pSide: 'Route', qSide: 'Login', mono: true },
+  { rule: 'Jeder gemergte Pull Request wurde von jemandem reviewt.', hint: 'Jede Karte ist ein Pull Request. Eine Seite zeigt den Status, die andere die Anzahl der Reviews.',
+    P: { yes: 'gemergt', no: 'offen' }, Q: { yes: '1 Review', no: '0 Reviews' }, Palt: { yes: 'gemergt', no: 'geschlossen' }, Qalt: { yes: '2 Reviews', no: '0 Reviews' },
+    pDesc: '„gemergt“', nqDesc: '„0 Reviews“', pSide: 'Status', qSide: 'Reviews' },
+  { rule: 'Jede public-Methode hat einen XML-Kommentar.', hint: 'Jede Karte ist eine Methode. Eine Seite zeigt die Sichtbarkeit, die andere, ob sie kommentiert ist.',
+    P: { yes: 'public', no: 'private' }, Q: { yes: '/// kommentiert', no: 'unkommentiert' }, Palt: { yes: 'public', no: 'internal' }, Qalt: { yes: '/// kommentiert', no: 'unkommentiert' },
+    pDesc: '„public“', nqDesc: '„unkommentiert“', pSide: 'Sichtbarkeit', qSide: 'Kommentar', mono: true }
+];
+function wasonWhy(set, c) {
+  if (c.domain === 'P' && c.val) { return 'Muss umgedreht werden. Hier gilt die Bedingung. Steht auf der Rückseite ' + set.nqDesc + ', ist die Regel verletzt.'; }
+  if (c.domain === 'P') { return 'Egal. Die Regel sagt nichts darüber, was bei „' + c.face + '“ gelten muss.'; }
+  if (c.val) { return 'Egal, und das ist die klassische Falle. Die Folge ist hier schon erfüllt. Was auf der Rückseite steht, kann die Regel nicht mehr verletzen.'; }
+  return 'Muss umgedreht werden. Die Folge fehlt. Steht auf der Rückseite ' + set.pDesc + ', ist die Regel verletzt.';
+}
+const WASON_STATION = {
+  title: 'Karten umdrehen',
+  tag: 'Station 4',
+  blurb: 'Prüfe eine Regel mit so wenigen Handgriffen wie möglich. Ein berühmtes Experiment, an dem die meisten scheitern.',
+  sample: '[ E ]  [ K ]  [ 4 ]  [ 7 ]',
+  build() {
+    return shuffle(WASON).map(set => {
+      const cards = shuffle([
+        { domain: 'P', val: true, face: set.P.yes, back: Math.random() < 0.5 ? set.Qalt.yes : set.Qalt.no, backVal: null },
+        { domain: 'P', val: false, face: set.P.no, back: Math.random() < 0.5 ? set.Qalt.yes : set.Qalt.no },
+        { domain: 'Q', val: true, face: set.Q.yes, back: Math.random() < 0.5 ? set.Palt.yes : set.Palt.no },
+        { domain: 'Q', val: false, face: set.Q.no, back: Math.random() < 0.5 ? set.Palt.yes : set.Palt.no }
+      ]);
+      return { set, cards };
+    });
+  },
+  render(it, el) {
+    const set = it.set;
+    el.innerHTML =
+      '<div class="sign"><div class="eyebrow">Die Regel</div><p class="rule">' + esc(set.rule) + '</p></div>' +
+      '<p class="note" style="margin:0">' + esc(set.hint) + ' Welche Karten musst du umdrehen, um sicher zu prüfen, ob die Regel eingehalten wird? Keine mehr als nötig.</p>' +
+      '<div class="cards">' + it.cards.map((c, i) =>
+        '<button class="card3' + (set.mono ? ' mono' : '') + '" data-i="' + i + '" aria-pressed="false" aria-label="Karte ' + (i + 1) + ': ' + esc(c.face) + '"><div class="inner">' +
+        '<div class="face"><small>' + (i + 1) + ' · ' + esc(c.domain === 'P' ? set.pSide : set.qSide) + '</small>' + esc(c.face) + '</div>' +
+        '<div class="back"><small>Rückseite</small>' + esc(c.back) + '<span class="mark"></span></div></div></button>').join('') + '</div>' +
+      '<button class="submit" id="checkBtn">Diese Karten umdrehen <kbd>Enter</kbd></button>';
+    const toggle = i => {
+      if (S.answered) { return; }
+      const b = $$('.card3', el)[i];
+      const on = !b.classList.contains('sel');
+      b.classList.toggle('sel', on);
+      b.setAttribute('aria-pressed', String(on));
+    };
+    $$('.card3', el).forEach(b => { b.onclick = () => toggle(+b.dataset.i); });
+    it.cards.forEach((_, i) => { S.keys[String(i + 1)] = () => toggle(i); });
+    const submit = () => {
+      if (S.answered) { return; }
+      const btns = $$('.card3', el);
+      let ok = true;
+      const lines = [];
+      it.cards.forEach((c, i) => {
+        const need = (c.domain === 'P' && c.val) || (c.domain === 'Q' && !c.val);
+        const sel = btns[i].classList.contains('sel');
+        if (need !== sel) { ok = false; }
+        btns[i].classList.add('flipped');
+        btns[i].classList.add(need ? 'need' : 'skip');
+        if (need && !sel) { btns[i].classList.add('miss'); }
+        const mark = $('.mark', btns[i]);
+        mark.textContent = need ? 'musste geprüft werden' : 'war egal';
+        mark.className = 'mark ' + (need ? 'w' : '');
+        lines.push('<li><b>' + esc(c.face) + '</b> ' + (sel ? '(von dir gewählt) ' : '') + '– ' + esc(wasonWhy(set, c)) + '</li>');
+      });
+      $('#checkBtn').disabled = true;
+      // Was the rule actually broken this time?
+      const pCard = it.cards.find(c => c.domain === 'P' && c.val);
+      const nqCard = it.cards.find(c => c.domain === 'Q' && !c.val);
+      const viol = [];
+      if (pCard.back === set.Qalt.no) { viol.push('„' + pCard.face + '“ hat auf der Rückseite „' + pCard.back + '“'); }
+      if (nqCard.back === set.Palt.yes) { viol.push('„' + nqCard.face + '“ hat auf der Rückseite „' + nqCard.back + '“'); }
+      const html = '<p>Richtig wären genau zwei Karten: „' + esc(pCard.face) + '“ und „' + esc(nqCard.face) + '“.</p>' +
+        '<div class="sub">Karte für Karte</div><ul class="cardlist">' + lines.join('') + '</ul>' +
+        '<p class="note">Diesmal ' + (viol.length ? 'war die Regel tatsächlich verletzt: ' + esc(viol.join(' und ')) + '.' : 'wurde die Regel eingehalten. Wissen konntest du das aber erst nach dem Umdrehen.') + '</p>';
+      resolve(ok, html, ['WASON']);
+    };
+    $('#checkBtn').onclick = submit;
+    S.keys.Enter = submit;
+  }
+};
+
+/* ============================================================
+   Game controller
+   ============================================================ */
+const MODES = { door: DOOR, code: CODE, promise: PROMISE, wason: WASON_STATION };
+const S = { mode: null, items: [], i: 0, score: 0, streak: 0, results: [], answered: false, keys: {} };
+const BEST_KEY = 'wenn-und-aber-best';
+function loadBest() { try { return JSON.parse(localStorage.getItem(BEST_KEY)) || {}; } catch (e) { return {}; } }
+function saveBest(b) { try { localStorage.setItem(BEST_KEY, JSON.stringify(b)); } catch (e) { /* storage unavailable */ } }
+
+function showView(id) {
+  ['home', 'game', 'end', 'sheet'].forEach(v => { $('#' + v).hidden = v !== id; });
+  window.scrollTo(0, 0);
+}
+
+function hintBox(structHtml) {
+  return '<div class="hintbox"><button class="ghost" id="hintBtn">Struktur zeigen (halbe Punkte) <kbd>H</kbd></button><div class="struct" id="struct" hidden>' + structHtml + '</div></div>';
+}
+function wireHint(it) {
+  const b = $('#hintBtn');
+  if (!b) { return; }
+  const f = () => { if (S.answered) { return; } it.hint = true; revealHint(); };
+  b.onclick = f;
+  S.keys.h = f;
+  S.keys.H = f;
+}
+function revealHint() {
+  const s = $('#struct');
+  const b = $('#hintBtn');
+  if (s) { s.hidden = false; }
+  if (b) { b.hidden = true; }
+}
+function wireBinary(fn) {
+  const go = v => { if (!S.answered) { fn(v); } };
+  $$('.ans', $('#stage')).forEach(b => { b.onclick = () => go(b.dataset.a === '1'); });
+  S.keys.ArrowLeft = () => go(false);
+  S.keys.ArrowRight = () => go(true);
+}
+function markBinary(chosen, truth) {
+  $$('.ans', $('#stage')).forEach(b => {
+    const v = b.dataset.a === '1';
+    b.disabled = true;
+    if (v === truth) { b.classList.add('is-right'); }
+    else if (v === chosen) { b.classList.add('is-wrong'); }
+  });
+}
+
+function startMode(m) {
+  S.mode = m;
+  S.items = MODES[m].build();
+  S.i = 0; S.score = 0; S.streak = 0; S.results = [];
+  $('#gTitle').textContent = MODES[m].title;
+  showView('game');
+  renderItem();
+}
+function renderPips() {
+  $('#pips').innerHTML = S.items.map((_, i) => {
+    const r = S.results[i];
+    return '<span class="pip ' + (r ? (r.ok ? 'ok' : 'bad') : (i === S.i ? 'cur' : '')) + '"></span>';
+  }).join('');
+}
+function renderItem() {
+  S.answered = false;
+  S.keys = {};
+  $('#fb').hidden = true;
+  $('#gScore').textContent = S.score;
+  $('#gStreak').textContent = S.streak;
+  renderPips();
+  MODES[S.mode].render(S.items[S.i], $('#stage'));
+}
+function resolve(ok, html, tags) {
+  if (S.answered) { return; }
+  S.answered = true;
+  const it = S.items[S.i];
+  const pts = ok ? (it.hint ? 5 : 10) : 0;
+  S.score += pts;
+  S.streak = ok ? S.streak + 1 : 0;
+  S.results.push({ ok, tags });
+  $('#gScore').textContent = S.score;
+  $('#gStreak').textContent = S.streak;
+  renderPips();
+  const last = S.i === S.items.length - 1;
+  const fb = $('#fb');
+  fb.className = 'fb ' + (ok ? 'ok' : 'bad');
+  fb.innerHTML =
+    '<div class="fb-head"><h3>' + (ok ? (it.hint ? 'Richtig, mit Hinweis (+5)' : 'Richtig (+10)') : 'Daneben') + '</h3>' +
+    '<button class="next" id="nextBtn">' + (last ? 'Auswertung' : 'Weiter') + ' <kbd>Enter</kbd></button></div>' +
+    html + (ok ? '' : tipHtml(tags));
+  fb.hidden = false;
+  $('#nextBtn').onclick = next;
+  $('#nextBtn').focus({ preventScroll: true });
+  fb.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+}
+function next() {
+  S.i++;
+  if (S.i >= S.items.length) { endRound(); } else { renderItem(); window.scrollTo({ top: 0 }); }
+}
+function endRound() {
+  const max = S.items.length * 10;
+  const right = S.results.filter(r => r.ok).length;
+  const best = loadBest();
+  const isBest = !(S.mode in best) || S.score > best[S.mode];
+  if (isBest) { best[S.mode] = S.score; saveBest(best); }
+  const miss = {};
+  S.results.filter(r => !r.ok).forEach(r => [...new Set(r.tags)].forEach(t => { miss[t] = (miss[t] || 0) + 1; }));
+  const missTags = Object.keys(miss).sort((a, b) => miss[b] - miss[a]);
+  const pct = S.score / max;
+  const verdict = pct >= 0.9 ? 'Da sitzt jede Verknüpfung.' : pct >= 0.7 ? 'Solide. Ein, zwei Stolpersteine sind noch drin.' : pct >= 0.5 ? 'Auf gutem Weg. Schau dir die Stolpersteine unten an.' : 'Das ist Übungssache. Der Spickzettel hilft beim nächsten Durchgang.';
+  $('#end').innerHTML =
+    '<div class="panel end" style="margin-top:16px"><div class="eyebrow">' + esc(MODES[S.mode].title) + ' · Auswertung</div>' +
+    '<div class="bigscore">' + S.score + '<span> / ' + max + ' Punkte</span></div>' +
+    '<p style="margin:0">' + right + ' von ' + S.items.length + ' richtig. ' + esc(verdict) + (isBest && S.score > 0 ? ' Neuer Bestwert.' : '') + '</p>' +
+    (missTags.length ? '<div><div class="sub">Deine Stolpersteine</div><div class="tip" style="background:var(--panel-2)">' +
+      missTags.map(t => '<div><b>' + esc(TAGS[t][0]) + ' (' + miss[t] + '×):</b> ' + esc(TAGS[t][1]) + '</div>').join('') + '</div></div>' : '') +
+    '<div class="row"><button class="submit" id="againBtn">Neue Runde</button><button class="ghost" id="backBtn">Andere Station</button></div></div>';
+  showView('end');
+  $('#againBtn').onclick = () => startMode(S.mode);
+  $('#backBtn').onclick = goHome;
+  $('#againBtn').focus({ preventScroll: true });
+}
+
+function goHome() {
+  const best = loadBest();
+  const max = { door: 100, code: 100, promise: 100, wason: 50 };
+  $('#stations').innerHTML = Object.keys(MODES).map(k => {
+    const m = MODES[k];
+    return '<button class="station" data-m="' + k + '"><div class="eyebrow">' + m.tag + '</div><h2>' + esc(m.title) + '</h2><p>' + esc(m.blurb) + '</p>' +
+      '<div class="sample">' + esc(m.sample) + '</div>' +
+      '<div class="meta"><span>' + (k === 'wason' ? '5 Regeln' : '10 Fragen') + '</span><span>Bestwert <b>' + (k in best ? best[k] : '–') + '</b> / ' + max[k] + '</span></div></button>';
+  }).join('');
+  $$('.station').forEach(b => { b.onclick = () => startMode(b.dataset.m); });
+  showView('home');
+}
+
+/* ---------- cheat sheet ---------- */
+function renderSheet() {
+  const A = { A: { pos: 'A', neg: 'nicht A' }, B: { pos: 'B', neg: 'nicht B' } };
+  const t = (ast, keys) => truthTable(keys || ['A', 'B'], k => k, [{ label: 'Ergebnis', ast }]);
+  const card = (title, op, text, ex, table, wide) =>
+    '<div class="panel' + (wide ? ' wide' : '') + '"><h3>' + esc(title) + (op ? '<span class="op">' + op + '</span>' : '') + '</h3><p>' + text + '</p>' + (ex ? '<p class="ex">' + ex + '</p>' : '') + (table || '') + '</div>';
+  $('#sheet').innerHTML =
+    '<section class="hero" style="padding-bottom:8px"><h1>Spickzettel</h1><p>Alle Verknüpfungen auf einen Blick. W steht für wahr, F für falsch.</p></section>' +
+    '<div class="sheet">' +
+    card('UND', '&amp;&amp;', 'Streng: alle Teile müssen wahr sein.', 'Volljährig UND Ticket: Wer nur eins davon hat, bleibt draußen.', t(and(at('A'), at('B')))) +
+    card('ODER', '||', 'Großzügig: ein wahrer Teil reicht, beide dürfen.', 'Ticket ODER Gästeliste: Wer beides hat, kommt natürlich auch rein.', t(or(at('A'), at('B')))) +
+    card('NICHT', '!', 'Dreht den Wert um.', 'NICHT Turnschuhe: wahr, wenn jemand Lederschuhe trägt.', t(not(at('A')), ['A'])) +
+    card('ENTWEDER–ODER', '^', 'Genau einer. Das ist das „oder“, das man im Alltag oft meint.', '„Kaffee oder Tee?“ heißt meistens: nicht beides.', t(xor(at('A'), at('B')))) +
+    card('WENN A DANN B', '!A || B', 'Nur gebrochen, wenn A eintritt und B ausbleibt. Tritt A nicht ein, ist alles erlaubt.', 'Wenn es regnet, nehme ich den Schirm. Bei Sonne mit Schirm: kein Bruch.', t(imp(at('A'), at('B')))) +
+    card('GENAU DANN, WENN', '==', 'Beide Seiten haben denselben Wert.', 'Licht an genau dann, wenn jemand im Raum ist.', t(iff(at('A'), at('B')))) +
+    card('Umgangssprache übersetzen', '', '„A nur, wenn B“ = WENN A DANN B.<br>„Ohne B kein A“ = WENN A DANN B.<br>„A, es sei denn B“ = WENN NICHT B DANN A.<br>„Wer A ist, bleibt draußen“ = rein darf: NICHT A.', 'Die Richtung bei „nur wenn“ ist die häufigste Verwechslung.', '', true) +
+    card('De Morgan', '', 'Zieht man ein NICHT in die Klammer, kippt UND zu ODER und umgekehrt.<br><code>!(a &amp;&amp; b) == !a || !b</code><br><code>!(a || b) == !a &amp;&amp; !b</code>', '„Wer Turnschuhe oder Jogginghose trägt, bleibt draußen“ heißt: rein darf, wer keine Turnschuhe UND keine Jogginghose trägt.', '', true) +
+    card('Vorrang und Guards in C#', '', '<code>!</code> bindet am stärksten, dann <code>&amp;&amp;</code>, dann <code>||</code>. Also: <code>a || b &amp;&amp; c</code> = <code>a || (b &amp;&amp; c)</code>.<br>Ein Guard <code>if (X) return;</code> lässt den Rest nur laufen, wenn X falsch ist. Zwei Guards hintereinander: <code>!X &amp;&amp; !Y</code>.', '', '', true) +
+    card('Regeln prüfen (Karten umdrehen)', '', 'Eine Regel WENN A DANN B kann nur ein Fall mit A und ohne B verletzen. Prüfe die Fälle mit A und die Fälle ohne B. Fälle mit B oder ohne A sind egal.', '', '', true) +
+    '</div><div class="row" style="margin-top:18px"><button class="submit" id="sheetBack">Zurück zu den Stationen</button></div>';
+  $('#sheetBack').onclick = goHome;
+  showView('sheet');
+}
+
+/* ---------- global wiring ---------- */
+$('#homeBtn').onclick = goHome;
+$('#sheetBtn').onclick = renderSheet;
+document.addEventListener('keydown', e => {
+  if ($('#game').hidden || e.ctrlKey || e.metaKey || e.altKey) { return; }
+  if (e.key === 'Enter' && e.target.tagName === 'BUTTON' && !(e.target.classList.contains('card3') && !S.answered)) { return; }
+  if (S.answered) {
+    if (e.key === 'Enter') { e.preventDefault(); next(); }
+    return;
+  }
+  const f = S.keys[e.key];
+  if (f) { e.preventDefault(); f(); }
+});
+
+goHome();
+})();
+</script>
+
+</body></html>
